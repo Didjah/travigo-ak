@@ -9,18 +9,20 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
+import { supabase } from '../../services/supabase';
 
 type Props = {
-  navigation: StackNavigationProp<RootStackParamList, 'OTP'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'OTP'>;
   route: RouteProp<RootStackParamList, 'OTP'>;
 };
 
 const CODE_LENGTH = 6;
 const RESEND_DELAY = 60;
+const DEV_CODE = '123456';
 
 export default function OTPScreen({ navigation, route }: Props) {
   const { phoneNumber } = route.params;
@@ -30,6 +32,14 @@ export default function OTPScreen({ navigation, route }: Props) {
   const [compteur, setCompteur] = useState(RESEND_DELAY);
   const inputs = useRef<Array<TextInput | null>>([]);
 
+  // Envoi automatique du SMS au montage (prod uniquement)
+  useEffect(() => {
+    if (!__DEV__) {
+      supabase.auth.signInWithOtp({ phone: `+225${phoneNumber}` });
+    }
+  }, [phoneNumber]);
+
+  // Décompte pour le renvoi
   useEffect(() => {
     if (compteur <= 0) return;
     const id = setInterval(() => setCompteur((c) => c - 1), 1000);
@@ -69,19 +79,43 @@ export default function OTPScreen({ navigation, route }: Props) {
     }
     setChargement(true);
     setErreur('');
-    // TODO: vérification Supabase OTP
-    await new Promise((r) => setTimeout(r, 1200));
+
+    if (__DEV__) {
+      // Mode développement : code fixe 123456
+      await new Promise((r) => setTimeout(r, 600));
+      setChargement(false);
+      if (code === DEV_CODE) {
+        navigation.replace('Profile', { phoneNumber });
+      } else {
+        setErreur(`Code incorrect. En mode DEV, utilisez ${DEV_CODE}.`);
+      }
+      return;
+    }
+
+    // Mode production : vérification Supabase
+    const { error } = await supabase.auth.verifyOtp({
+      phone: `+225${phoneNumber}`,
+      token: code,
+      type: 'sms',
+    });
     setChargement(false);
-    setErreur('Code incorrect. Veuillez réessayer.');
+    if (error) {
+      setErreur('Code incorrect. Veuillez réessayer.');
+    } else {
+      navigation.replace('Profile', { phoneNumber });
+    }
   }
 
-  function handleRenvoyer() {
+  async function handleRenvoyer() {
     if (compteur > 0) return;
     setDigits(Array(CODE_LENGTH).fill(''));
     setErreur('');
     setCompteur(RESEND_DELAY);
     inputs.current[0]?.focus();
-    // TODO: renvoi SMS Supabase
+
+    if (!__DEV__) {
+      await supabase.auth.signInWithOtp({ phone: `+225${phoneNumber}` });
+    }
   }
 
   const codeComplet = digits.every((d) => d !== '');
@@ -114,6 +148,15 @@ export default function OTPScreen({ navigation, route }: Props) {
             Code envoyé au{' '}
             <Text style={styles.numero}>+225 {phoneNumber}</Text>
           </Text>
+
+          {/* Bannière mode DEV */}
+          {__DEV__ && (
+            <View style={styles.devBanner}>
+              <Text style={styles.devBannerTexte}>
+                Mode DEV — Code de test : {DEV_CODE}
+              </Text>
+            </View>
+          )}
 
           {/* Cellules OTP */}
           <View style={styles.cellules}>
@@ -215,11 +258,25 @@ const styles = StyleSheet.create({
   sousTitre: {
     fontSize: 14,
     color: COLORS.taupe,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   numero: {
     color: COLORS.graphite,
     fontWeight: '600',
+  },
+  devBanner: {
+    backgroundColor: '#FFF3CD',
+    borderWidth: 1,
+    borderColor: '#FBBF24',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  devBannerTexte: {
+    fontSize: 12,
+    color: '#92400E',
+    fontWeight: '600',
+    textAlign: 'center',
   },
   cellules: {
     flexDirection: 'row',
