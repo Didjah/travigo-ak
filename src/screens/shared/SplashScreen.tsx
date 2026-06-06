@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
 
 type Props = {
-  navigation: StackNavigationProp<RootStackParamList, 'Splash'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Splash'>;
 };
 
 export default function SplashScreen({ navigation }: Props) {

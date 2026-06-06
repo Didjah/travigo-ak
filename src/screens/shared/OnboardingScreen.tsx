@@ -8,12 +8,12 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
 
 type Props = {
-  navigation: StackNavigationProp<RootStackParamList, 'Onboarding'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Onboarding'>;
 };
 
 function validerNumeroCi(numero: string): boolean {
