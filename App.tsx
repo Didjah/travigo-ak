@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { RootStackParamList } from './src/navigation/types';
 import SplashScreen from './src/screens/shared/SplashScreen';
 import OnboardingScreen from './src/screens/shared/OnboardingScreen';
+import OTPScreen from './src/screens/shared/OTPScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -15,6 +16,7 @@ export default function App() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        <Stack.Screen name="OTP" component={OTPScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

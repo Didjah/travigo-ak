@@ -30,7 +30,7 @@ export default function OnboardingScreen({ navigation }: Props) {
       return;
     }
     setErreur('');
-    // TODO: navigation vers OTP / AuthScreen avec le numéro +225{numero}
+    navigation.navigate('OTP', { phoneNumber: numero });
   }
 
   function handleChangeNumero(valeur: string) {
