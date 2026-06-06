@@ -17,11 +17,11 @@ type Props = {
   route: RouteProp<RootStackParamList, 'Home'>;
 };
 
-export default function HomeScreen({ route }: Props) {
+export default function HomeScreen({ navigation, route }: Props) {
   const { nom } = route.params;
 
   function handleCommanderTaxi() {
-    Alert.alert('Bientôt disponible', 'La commande de taxi sera disponible dans la prochaine version.');
+    navigation.navigate('Commande', { nom });
   }
 
   return (

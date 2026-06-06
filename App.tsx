@@ -8,6 +8,9 @@ import OnboardingScreen from './src/screens/shared/OnboardingScreen';
 import OTPScreen from './src/screens/shared/OTPScreen';
 import ProfileScreen from './src/screens/shared/ProfileScreen';
 import HomeScreen from './src/screens/client/HomeScreen';
+import CommandeScreen from './src/screens/client/CommandeScreen';
+import RechercheScreen from './src/screens/client/RechercheScreen';
+import CourseScreen from './src/screens/client/CourseScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -21,6 +24,9 @@ export default function App() {
         <Stack.Screen name="OTP" component={OTPScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Commande" component={CommandeScreen} />
+        <Stack.Screen name="Recherche" component={RechercheScreen} />
+        <Stack.Screen name="Course" component={CourseScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
