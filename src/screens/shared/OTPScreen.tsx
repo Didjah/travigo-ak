@@ -61,18 +61,6 @@ export default function OTPScreen({ navigation, route }: Props) {
     }
   }
 
-  function handleColler(texte: string, index: number) {
-    const chiffres = texte.replace(/\D/g, '').slice(0, CODE_LENGTH - index);
-    if (!chiffres) return;
-    const nouveaux = [...digits];
-    for (let i = 0; i < chiffres.length; i++) {
-      if (index + i < CODE_LENGTH) nouveaux[index + i] = chiffres[i];
-    }
-    setDigits(nouveaux);
-    const prochainVide = Math.min(index + chiffres.length, CODE_LENGTH - 1);
-    inputs.current[prochainVide]?.focus();
-  }
-
   async function handleVerifier() {
     const code = digits.join('');
     if (code.length < CODE_LENGTH) {
@@ -143,9 +131,6 @@ export default function OTPScreen({ navigation, route }: Props) {
                 onKeyPress={({ nativeEvent }) => {
                   if (nativeEvent.key === 'Backspace') handleRetourArriere(i);
                 }}
-                onPaste={(e) =>
-                  handleColler((e.nativeEvent as any).text ?? '', i)
-                }
                 keyboardType="number-pad"
                 maxLength={1}
                 selectTextOnFocus
