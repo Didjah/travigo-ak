@@ -13,24 +13,24 @@ import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
 
 type Props = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Onboarding'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'LoginChauffeur'>;
 };
 
 function validerNumeroCi(numero: string): boolean {
   return /^\d{10}$/.test(numero);
 }
 
-export default function OnboardingScreen({ navigation }: Props) {
+export default function LoginChauffeurScreen({ navigation }: Props) {
   const [numero, setNumero] = useState('');
   const [erreur, setErreur] = useState('');
 
-  function handleContinuer() {
+  function handleConnexion() {
     if (!validerNumeroCi(numero)) {
       setErreur('Veuillez entrer un numéro valide (10 chiffres)');
       return;
     }
     setErreur('');
-    navigation.navigate('OTP', { phoneNumber: numero });
+    navigation.navigate('OTPChauffeur', { phoneNumber: numero });
   }
 
   function handleChangeNumero(valeur: string) {
@@ -51,11 +51,16 @@ export default function OnboardingScreen({ navigation }: Props) {
           <Text style={styles.logoAk}>-AK</Text>
         </Text>
 
+        {/* Badge chauffeur */}
+        <View style={styles.badgeChauffeur}>
+          <Text style={styles.badgeChauffeurTexte}>ESPACE CHAUFFEUR</Text>
+        </View>
+
         {/* Formulaire */}
         <View style={styles.formContainer}>
-          <Text style={styles.titre}>Entrez votre numéro de téléphone</Text>
+          <Text style={styles.titre}>Connexion chauffeur</Text>
           <Text style={styles.sousTitre}>
-            Nous vous enverrons un code de vérification
+            Entrez votre numéro pour recevoir un code de vérification
           </Text>
 
           <View style={styles.inputContainer}>
@@ -65,7 +70,7 @@ export default function OnboardingScreen({ navigation }: Props) {
             <TextInput
               style={styles.input}
               placeholder="XX XX XX XX XX"
-              placeholderTextColor={COLORS.taupe}
+              placeholderTextColor="#6B6B6B"
               keyboardType="number-pad"
               maxLength={10}
               value={numero}
@@ -80,20 +85,18 @@ export default function OnboardingScreen({ navigation }: Props) {
               styles.bouton,
               !validerNumeroCi(numero) && styles.boutonDesactive,
             ]}
-            onPress={handleContinuer}
+            onPress={handleConnexion}
             activeOpacity={0.8}
           >
-            <Text style={styles.boutonTexte}>Continuer</Text>
+            <Text style={styles.boutonTexte}>Connexion chauffeur</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.lienChauffeur}
-            onPress={() => navigation.navigate('LoginChauffeur')}
+            style={styles.lienPassager}
+            onPress={() => navigation.navigate('Onboarding')}
             activeOpacity={0.7}
           >
-            <Text style={styles.lienChauffeurTexte}>
-              Vous êtes chauffeur ? Connectez-vous ici
-            </Text>
+            <Text style={styles.lienPassagerTexte}>Je suis un passager →</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -104,7 +107,7 @@ export default function OnboardingScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.ivoire,
+    backgroundColor: '#2A2A2A',
   },
   inner: {
     flex: 1,
@@ -120,87 +123,102 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   logoTravi: {
-    color: COLORS.graphite,
+    color: COLORS.ivoire,
   },
   logoGo: {
     color: COLORS.terracotta,
   },
   logoAk: {
-    color: COLORS.graphite,
+    color: COLORS.ivoire,
+  },
+  badgeChauffeur: {
+    backgroundColor: COLORS.terracotta,
+    paddingHorizontal: 14,
+    paddingVertical: 5,
+    borderRadius: 20,
+    marginTop: -12,
+  },
+  badgeChauffeurTexte: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: COLORS.blanc,
+    letterSpacing: 1.5,
   },
   formContainer: {
     width: '100%',
-    gap: 12,
+    gap: 14,
   },
   titre: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
-    color: COLORS.graphite,
-    marginBottom: 4,
+    color: COLORS.ivoire,
   },
   sousTitre: {
     fontSize: 14,
-    color: COLORS.taupe,
-    marginBottom: 8,
+    color: '#9A9A9A',
+    lineHeight: 20,
+    marginBottom: 4,
   },
   inputContainer: {
     flexDirection: 'row',
     borderWidth: 1.5,
-    borderColor: COLORS.taupe,
+    borderColor: '#4A4A4A',
     borderRadius: 12,
     overflow: 'hidden',
-    backgroundColor: COLORS.blanc,
+    backgroundColor: '#333333',
   },
   prefixContainer: {
     paddingHorizontal: 14,
     paddingVertical: 14,
-    backgroundColor: '#F0EDE8',
+    backgroundColor: '#3D3D3D',
     justifyContent: 'center',
     borderRightWidth: 1.5,
-    borderRightColor: COLORS.taupe,
+    borderRightColor: '#4A4A4A',
   },
   prefix: {
     fontSize: 16,
     fontWeight: '600',
-    color: COLORS.graphite,
+    color: COLORS.ivoire,
   },
   input: {
     flex: 1,
     paddingHorizontal: 14,
     paddingVertical: 14,
     fontSize: 16,
-    color: COLORS.graphite,
+    color: COLORS.ivoire,
     letterSpacing: 1,
   },
   erreur: {
     fontSize: 13,
-    color: COLORS.rouge,
-    marginTop: 4,
+    color: '#FF6B6B',
+    marginTop: 2,
   },
   bouton: {
-    backgroundColor: COLORS.terracotta,
+    backgroundColor: COLORS.graphite,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 4,
+    borderWidth: 1,
+    borderColor: '#555555',
   },
   boutonDesactive: {
     opacity: 0.45,
   },
   boutonTexte: {
-    color: COLORS.blanc,
+    color: COLORS.ivoire,
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.5,
   },
-  lienChauffeur: {
+  lienPassager: {
     alignItems: 'center',
     paddingVertical: 8,
-    marginTop: 4,
   },
-  lienChauffeurTexte: {
-    fontSize: 13,
-    color: COLORS.taupe,
+  lienPassagerTexte: {
+    fontSize: 14,
+    color: '#9A9A9A',
+    fontWeight: '500',
     textDecorationLine: 'underline',
   },
 });
