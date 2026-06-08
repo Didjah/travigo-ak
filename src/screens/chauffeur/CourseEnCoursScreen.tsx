@@ -12,6 +12,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
+import { startTrackingChauffeur, stopTracking } from '../../services/locationService';
+import { terminerCourse } from '../../services/courseService';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'CourseEnCours'>;
@@ -32,10 +34,28 @@ function formaterDuree(secondes: number): string {
 }
 
 export default function CourseEnCoursScreen({ navigation, route }: Props) {
-  const { passagerPrenom, destination, prixEstime } = route.params;
+  const { passagerPrenom, destination, prixEstime, courseId } = route.params;
   const gainFinal = extrairePrix(prixEstime);
   const [duree, setDuree] = useState(0);
+  const [gpsActif, setGpsActif] = useState(false);
   const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  // Démarrer le tracking GPS dès le montage de l'écran
+  useEffect(() => {
+    let actif = true;
+    async function demarrerGPS() {
+      if (courseId) {
+        await startTrackingChauffeur(courseId);
+        if (actif) setGpsActif(true);
+      }
+    }
+    demarrerGPS();
+    return () => {
+      actif = false;
+      stopTracking();
+      setGpsActif(false);
+    };
+  }, [courseId]);
 
   useEffect(() => {
     const id = setInterval(() => setDuree((d) => d + 1), 1000);
@@ -62,7 +82,11 @@ export default function CourseEnCoursScreen({ navigation, route }: Props) {
         {
           text: 'Confirmer',
           style: 'default',
-          onPress: () => {
+          onPress: async () => {
+            stopTracking();
+            if (courseId) {
+              await terminerCourse(courseId);
+            }
             Alert.alert(
               'Course terminée ! 🎉',
               `Gain encaissé : ${gainFinal.toLocaleString('fr-FR')} FCFA\nDurée : ${formaterDuree(duree)}`,
@@ -156,6 +180,14 @@ export default function CourseEnCoursScreen({ navigation, route }: Props) {
             <View style={[styles.marqueurCorps, { backgroundColor: COLORS.terracotta }]}>
               <Text style={styles.marqueurIcone}>🏁</Text>
             </View>
+          </View>
+
+          {/* Badge GPS envoi */}
+          <View style={[styles.badgeGPS, gpsActif && styles.badgeGPSActif]}>
+            <View style={[styles.badgeGPSPoint, gpsActif && styles.badgeGPSPointActif]} />
+            <Text style={styles.badgeGPSTexte}>
+              {gpsActif ? 'GPS ↑' : 'GPS...'}
+            </Text>
           </View>
 
           <View style={styles.badgeVille}>
@@ -388,6 +420,35 @@ const styles = StyleSheet.create({
   },
   marqueurIcone: {
     fontSize: 14,
+  },
+  badgeGPS: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(61,61,61,0.8)',
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  badgeGPSActif: {
+    backgroundColor: 'rgba(21,128,61,0.9)',
+  },
+  badgeGPSPoint: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: '#9CA3AF',
+  },
+  badgeGPSPointActif: {
+    backgroundColor: '#86EFAC',
+  },
+  badgeGPSTexte: {
+    fontSize: 9,
+    color: COLORS.blanc,
+    fontWeight: '700',
   },
   badgeVille: {
     position: 'absolute',

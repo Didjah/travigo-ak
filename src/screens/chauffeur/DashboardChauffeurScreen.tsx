@@ -10,23 +10,38 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
+import { watchPosition } from '../../services/locationService';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'DashboardChauffeur'>;
 };
 
 const CHAUFFEUR_NOM = 'Konan Yao';
+const CARTE_WIDTH = 300;
+const CARTE_HEIGHT = 180;
+const GAGNOA = { lat: 5.9306, lng: -5.9631 };
+const ECHELLE = 1800;
+
+function latLngVersXY(lat: number, lng: number) {
+  const x = CARTE_WIDTH / 2 + (lng - GAGNOA.lng) * ECHELLE;
+  const y = CARTE_HEIGHT / 2 - (lat - GAGNOA.lat) * ECHELLE;
+  return {
+    x: Math.min(Math.max(x, 16), CARTE_WIDTH - 16),
+    y: Math.min(Math.max(y, 16), CARTE_HEIGHT - 16),
+  };
+}
 
 export default function DashboardChauffeurScreen({ navigation }: Props) {
   const [disponible, setDisponible] = useState(false);
-  const [courses, setCourses] = useState(3);
-  const [gains, setGains] = useState(4500);
+  const [courses] = useState(3);
+  const [gains] = useState(4500);
+  const [positionGPS, setPositionGPS] = useState<{ lat: number; lng: number } | null>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stopWatchRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     if (disponible) {
-      // Animation pulsation du point de statut
       const pulse = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, { toValue: 1.4, duration: 700, useNativeDriver: true }),
@@ -34,6 +49,13 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
         ])
       );
       pulse.start();
+
+      // Démarrer la surveillance GPS en arrière-plan
+      watchPosition((lat, lng) => {
+        setPositionGPS({ lat, lng });
+      }).then((stop) => {
+        stopWatchRef.current = stop;
+      });
 
       // Simulation course entrante après 8 secondes en mode DEV
       if (__DEV__) {
@@ -50,16 +72,25 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
       return () => {
         pulse.stop();
         if (timerRef.current) clearTimeout(timerRef.current);
+        stopWatchRef.current?.();
+        stopWatchRef.current = null;
       };
     } else {
       pulseAnim.setValue(1);
       if (timerRef.current) clearTimeout(timerRef.current);
+      stopWatchRef.current?.();
+      stopWatchRef.current = null;
     }
   }, [disponible]);
 
   function toggleDisponible() {
     setDisponible((v) => !v);
   }
+
+  // Position du marqueur voiture sur la carte
+  const marqueurXY = positionGPS
+    ? latLngVersXY(positionGPS.lat, positionGPS.lng)
+    : { x: CARTE_WIDTH * 0.42, y: CARTE_HEIGHT * 0.38 };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.inner}>
@@ -89,7 +120,9 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
               {disponible ? 'Disponible' : 'Hors ligne'}
             </Text>
             <Text style={styles.toggleSousTitre}>
-              {disponible ? 'En attente de course...' : 'Activez pour recevoir des courses'}
+              {disponible
+                ? positionGPS ? 'GPS actif • En attente de course...' : 'Localisation...'
+                : 'Activez pour recevoir des courses'}
             </Text>
           </View>
         </View>
@@ -104,7 +137,7 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
         </TouchableOpacity>
       </View>
 
-      {/* Carte stylisée position chauffeur */}
+      {/* Carte position chauffeur */}
       <View style={styles.carteWrapper}>
         <View style={styles.carte}>
           {/* Parcs */}
@@ -129,13 +162,28 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
           <View style={[styles.batiment, { top: '70%', left: '5%', width: 32, height: 16 }]} />
           <View style={[styles.batiment, { top: '70%', left: '25%', width: 38, height: 16 }]} />
 
-          {/* Marqueur chauffeur (voiture) */}
-          <View style={styles.marqueurContainer}>
+          {/* Marqueur chauffeur — position GPS réelle si disponible */}
+          <View
+            style={[
+              styles.marqueurContainer,
+              { left: marqueurXY.x - 18, top: marqueurXY.y - 18 },
+            ]}
+          >
             <View style={[styles.marqueurCorps, disponible ? styles.marqueurActif : styles.marqueurInactif]}>
               <Text style={styles.marqueurIcone}>🚖</Text>
             </View>
             <View style={styles.marqueurOmbre} />
           </View>
+
+          {/* Badge GPS */}
+          {disponible && (
+            <View style={[styles.badgeGPS, positionGPS ? styles.badgeGPSActif : undefined]}>
+              <View style={[styles.badgeGPSPoint, positionGPS ? styles.badgeGPSPointActif : undefined]} />
+              <Text style={styles.badgeGPSTexte}>
+                {positionGPS ? 'GPS réel' : 'GPS...'}
+              </Text>
+            </View>
+          )}
 
           {/* Badge ville */}
           <View style={styles.badgeVille}>
@@ -150,6 +198,16 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
           )}
         </View>
       </View>
+
+      {/* Coordonnées GPS si disponibles */}
+      {disponible && positionGPS && (
+        <View style={styles.coordsCard}>
+          <Text style={styles.coordsLabel}>📍 Position GPS</Text>
+          <Text style={styles.coordsValeur}>
+            {positionGPS.lat.toFixed(4)}° N, {positionGPS.lng.toFixed(4)}° E
+          </Text>
+        </View>
+      )}
 
       {/* Statistiques du jour */}
       <Text style={styles.sectionTitre}>Aujourd'hui</Text>
@@ -327,9 +385,9 @@ const styles = StyleSheet.create({
   },
   marqueurContainer: {
     position: 'absolute',
-    top: '35%',
-    left: '40%',
     alignItems: 'center',
+    width: 36,
+    height: 36,
   },
   marqueurCorps: {
     width: 36,
@@ -360,6 +418,35 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.15)',
     marginTop: 2,
   },
+  badgeGPS: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: 'rgba(61,61,61,0.8)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  badgeGPSActif: {
+    backgroundColor: 'rgba(21,128,61,0.85)',
+  },
+  badgeGPSPoint: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#9CA3AF',
+  },
+  badgeGPSPointActif: {
+    backgroundColor: '#86EFAC',
+  },
+  badgeGPSTexte: {
+    fontSize: 10,
+    color: COLORS.blanc,
+    fontWeight: '600',
+  },
   badgeVille: {
     position: 'absolute',
     bottom: 10,
@@ -386,6 +473,31 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.blanc,
     letterSpacing: 1,
+  },
+
+  // Coordonnées GPS
+  coordsCard: {
+    marginHorizontal: 24,
+    backgroundColor: COLORS.blanc,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#86EFAC',
+  },
+  coordsLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#15803D',
+  },
+  coordsValeur: {
+    fontSize: 11,
+    color: COLORS.graphite,
+    fontWeight: '500',
+    fontVariant: ['tabular-nums'],
   },
 
   // Stats

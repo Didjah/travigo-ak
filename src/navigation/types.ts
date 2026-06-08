@@ -33,10 +33,12 @@ export type RootStackParamList = {
     depart: string;
     destination: string;
     prixEstime: string;
+    courseId?: string;
   };
   CourseEnCours: {
     passagerPrenom: string;
     destination: string;
     prixEstime: string;
+    courseId?: string;
   };
 };
