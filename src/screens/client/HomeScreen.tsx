@@ -28,6 +28,10 @@ export default function HomeScreen({ navigation, route }: Props) {
     navigation.navigate('Historique', { nom });
   }
 
+  function handleTransportScolaire() {
+    navigation.navigate('TransportScolaire', { nom });
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       {/* En-tête */}
@@ -59,15 +63,25 @@ export default function HomeScreen({ navigation, route }: Props) {
           </TouchableOpacity>
         </View>
 
-        {/* Bouton historique */}
-        <TouchableOpacity
-          style={styles.boutonHistorique}
-          onPress={handleHistorique}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.boutonHistoriqueIcone}>📋</Text>
-          <Text style={styles.boutonHistoriqueTexte}>Mes courses</Text>
-        </TouchableOpacity>
+        {/* Boutons secondaires */}
+        <View style={styles.boutonsRow}>
+          <TouchableOpacity
+            style={[styles.boutonSecondaire, { flex: 1 }]}
+            onPress={handleHistorique}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.boutonSecondaireIcone}>📋</Text>
+            <Text style={styles.boutonSecondaireTexte}>Mes courses</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.boutonSecondaire, { flex: 1 }]}
+            onPress={handleTransportScolaire}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.boutonSecondaireIcone}>🏫</Text>
+            <Text style={styles.boutonSecondaireTexte}>Scolaire</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Bouton principal */}
         <TouchableOpacity
@@ -212,13 +226,18 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: COLORS.taupe,
   },
-  boutonHistorique: {
+  boutonsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  boutonSecondaire: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    justifyContent: 'center',
+    gap: 8,
     backgroundColor: COLORS.blanc,
     borderRadius: 14,
-    paddingHorizontal: 18,
+    paddingHorizontal: 14,
     paddingVertical: 14,
     borderWidth: 1.5,
     borderColor: '#E5E0D8',
@@ -228,11 +247,11 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 1,
   },
-  boutonHistoriqueIcone: {
-    fontSize: 20,
+  boutonSecondaireIcone: {
+    fontSize: 18,
   },
-  boutonHistoriqueTexte: {
-    fontSize: 15,
+  boutonSecondaireTexte: {
+    fontSize: 14,
     fontWeight: '700',
     color: COLORS.graphite,
   },

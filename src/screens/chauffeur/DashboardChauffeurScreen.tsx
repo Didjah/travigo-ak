@@ -21,6 +21,10 @@ import {
   estExpire,
   type Abonnement,
 } from '../../services/abonnementService';
+import {
+  getAbonnementsScolaireChauffeur,
+  type AbonnementScolaire,
+} from '../../services/scolaireService';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'DashboardChauffeur'>;
@@ -49,32 +53,47 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
   const [gains] = useState(4500);
   const [positionGPS, setPositionGPS] = useState<{ lat: number; lng: number } | null>(null);
   const [abonnement, setAbonnement] = useState<Abonnement | null>(null);
+  const [courseScolaires, setCourseScolaires] = useState<AbonnementScolaire[]>([]);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stopWatchRef = useRef<(() => void) | null>(null);
   const stopRealtimeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    async function chargerAbonnement() {
+    async function chargerDonnees() {
       const user = getSessionUser();
       if (!user) return;
-      const actif = await getAbonnementActif(user.id);
-      if (actif) { setAbonnement(actif); return; }
-      const dernier = await getDernierAbonnement(user.id);
-      setAbonnement(dernier);
+      const [actif, scolaires] = await Promise.all([
+        getAbonnementActif(user.id),
+        getAbonnementsScolaireChauffeur(user.id),
+      ]);
+      if (actif) {
+        setAbonnement(actif);
+      } else {
+        const dernier = await getDernierAbonnement(user.id);
+        setAbonnement(dernier);
+      }
+      setCourseScolaires(scolaires);
     }
-    chargerAbonnement();
+    chargerDonnees();
   }, []);
 
-  // Recharger abonnement au focus (retour depuis AbonnementScreen)
+  // Recharger au focus (retour depuis AbonnementScreen / CourseScolaireScreen)
   useEffect(() => {
     const unsub = navigation.addListener('focus', async () => {
       const user = getSessionUser();
       if (!user) return;
-      const actif = await getAbonnementActif(user.id);
-      if (actif) { setAbonnement(actif); return; }
-      const dernier = await getDernierAbonnement(user.id);
-      setAbonnement(dernier);
+      const [actif, scolaires] = await Promise.all([
+        getAbonnementActif(user.id),
+        getAbonnementsScolaireChauffeur(user.id),
+      ]);
+      if (actif) {
+        setAbonnement(actif);
+      } else {
+        const dernier = await getDernierAbonnement(user.id);
+        setAbonnement(dernier);
+      }
+      setCourseScolaires(scolaires);
     });
     return unsub;
   }, [navigation]);
@@ -330,6 +349,30 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
           <Text style={styles.statLabel}>Note ★</Text>
         </View>
       </View>
+
+      {/* Section Scolaire du jour */}
+      {(courseScolaires.length > 0 || __DEV__) && (
+        <TouchableOpacity
+          style={styles.scolaireCard}
+          onPress={() => navigation.navigate('CourseScolaire')}
+          activeOpacity={0.85}
+        >
+          <View style={styles.scolaireLeft}>
+            <Text style={styles.scolaireIcone}>🏫</Text>
+            <View>
+              <Text style={styles.scolaireTitre}>Scolaire du jour</Text>
+              <Text style={styles.scolaireSous}>
+                {__DEV__ && courseScolaires.length === 0
+                  ? '3 enfants (simulation DEV)'
+                  : `${courseScolaires.length} enfant${courseScolaires.length > 1 ? 's' : ''} à transporter`}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.scolaireChevron}>
+            <Text style={styles.scolaireChevronTexte}>›</Text>
+          </View>
+        </TouchableOpacity>
+      )}
 
       {/* Bouton Historique */}
       <TouchableOpacity
@@ -711,6 +754,58 @@ const styles = StyleSheet.create({
   },
   statLabelPrincipal: {
     color: 'rgba(255,255,255,0.8)',
+  },
+
+  // Section scolaire
+  scolaireCard: {
+    marginHorizontal: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#FFF8F0',
+    borderRadius: 14,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    borderWidth: 1.5,
+    borderColor: '#FDDCB5',
+    shadowColor: COLORS.terracotta,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  scolaireLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    flex: 1,
+  },
+  scolaireIcone: {
+    fontSize: 28,
+  },
+  scolaireTitre: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: COLORS.graphite,
+  },
+  scolaireSous: {
+    fontSize: 11,
+    color: COLORS.taupe,
+    marginTop: 2,
+  },
+  scolaireChevron: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: COLORS.terracotta,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scolaireChevronTexte: {
+    fontSize: 18,
+    color: COLORS.blanc,
+    fontWeight: '700',
+    lineHeight: 22,
   },
 
   // Bouton Historique
