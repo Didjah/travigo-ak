@@ -419,6 +419,22 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
         </TouchableOpacity>
       )}
 
+      {/* Bouton Covoiturage — Proposer un trajet */}
+      <TouchableOpacity
+        style={styles.boutonCovoiturage}
+        onPress={() => navigation.navigate('ProposerTrajet')}
+        activeOpacity={0.85}
+      >
+        <Text style={styles.boutonCovoiturageIcone}>🚗</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.boutonCovoiturageTexte}>Proposer un trajet</Text>
+          <Text style={styles.boutonCovoiturageSous}>Covoiturage inter-villes depuis Gagnoa</Text>
+        </View>
+        <View style={styles.boutonCovoiturageChevron}>
+          <Text style={styles.boutonCovoiturageChevronTexte}>›</Text>
+        </View>
+      </TouchableOpacity>
+
       {/* Bouton Historique */}
       <TouchableOpacity
         style={styles.boutonHistorique}
@@ -911,6 +927,50 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   livraisonChevronTexte: {
+    fontSize: 18,
+    color: COLORS.blanc,
+    fontWeight: '700',
+    lineHeight: 22,
+  },
+
+  // Bouton Covoiturage
+  boutonCovoiturage: {
+    marginHorizontal: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: '#F0FFF4',
+    borderRadius: 14,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    borderWidth: 1.5,
+    borderColor: '#86EFAC',
+    shadowColor: '#22C55E',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  boutonCovoiturageIcone: { fontSize: 26 },
+  boutonCovoiturageTexte: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: COLORS.graphite,
+  },
+  boutonCovoiturageSous: {
+    fontSize: 11,
+    color: COLORS.taupe,
+    marginTop: 2,
+  },
+  boutonCovoiturageChevron: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#22C55E',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  boutonCovoiturageChevronTexte: {
     fontSize: 18,
     color: COLORS.blanc,
     fontWeight: '700',

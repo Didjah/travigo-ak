@@ -36,6 +36,10 @@ export default function HomeScreen({ navigation, route }: Props) {
     navigation.navigate('Livraison', { nom });
   }
 
+  function handleCovoiturage() {
+    navigation.navigate('Covoiturage', { nom });
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       {/* En-tête */}
@@ -67,32 +71,44 @@ export default function HomeScreen({ navigation, route }: Props) {
           </TouchableOpacity>
         </View>
 
-        {/* Boutons secondaires */}
-        <View style={styles.boutonsRow}>
-          <TouchableOpacity
-            style={[styles.boutonSecondaire, { flex: 1 }]}
-            onPress={handleHistorique}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.boutonSecondaireIcone}>📋</Text>
-            <Text style={styles.boutonSecondaireTexte}>Mes courses</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.boutonSecondaire, { flex: 1 }]}
-            onPress={handleTransportScolaire}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.boutonSecondaireIcone}>🏫</Text>
-            <Text style={styles.boutonSecondaireTexte}>Scolaire</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.boutonSecondaire, { flex: 1 }]}
-            onPress={handleLivraison}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.boutonSecondaireIcone}>📦</Text>
-            <Text style={styles.boutonSecondaireTexte}>Livraison</Text>
-          </TouchableOpacity>
+        {/* Boutons secondaires — grille 2×2 */}
+        <View style={styles.boutonsGrille}>
+          <View style={styles.boutonsRow}>
+            <TouchableOpacity
+              style={[styles.boutonSecondaire, { flex: 1 }]}
+              onPress={handleHistorique}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.boutonSecondaireIcone}>📋</Text>
+              <Text style={styles.boutonSecondaireTexte}>Mes courses</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.boutonSecondaire, { flex: 1 }]}
+              onPress={handleTransportScolaire}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.boutonSecondaireIcone}>🏫</Text>
+              <Text style={styles.boutonSecondaireTexte}>Scolaire</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.boutonsRow}>
+            <TouchableOpacity
+              style={[styles.boutonSecondaire, { flex: 1 }]}
+              onPress={handleLivraison}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.boutonSecondaireIcone}>📦</Text>
+              <Text style={styles.boutonSecondaireTexte}>Livraison</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.boutonSecondaire, { flex: 1 }]}
+              onPress={handleCovoiturage}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.boutonSecondaireIcone}>🚗</Text>
+              <Text style={styles.boutonSecondaireTexte}>Covoiturage</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Bouton principal */}
@@ -238,9 +254,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: COLORS.taupe,
   },
+  boutonsGrille: {
+    gap: 10,
+  },
   boutonsRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 10,
   },
   boutonSecondaire: {
     flexDirection: 'row',

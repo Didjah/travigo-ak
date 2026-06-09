@@ -51,6 +51,10 @@ export type RootStackParamList = {
     courseId?: string;
   };
 
+  // Covoiturage
+  Covoiturage: { nom: string };
+  ProposerTrajet: undefined;
+
   // Paiement & post-course
   Paiement: { nom: string; montant: number; courseId?: string };
   SuccesPaiement: {

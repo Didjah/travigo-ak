@@ -16,6 +16,7 @@ import HomeScreen from './src/screens/client/HomeScreen';
 import HistoriqueScreen from './src/screens/client/HistoriqueScreen';
 import TransportScolaireScreen from './src/screens/client/TransportScolaireScreen';
 import LivraisonScreen from './src/screens/client/LivraisonScreen';
+import CovoiturageScreen from './src/screens/client/CovoiturageScreen';
 import CommandeScreen from './src/screens/client/CommandeScreen';
 import RechercheScreen from './src/screens/client/RechercheScreen';
 import CourseScreen from './src/screens/client/CourseScreen';
@@ -32,6 +33,7 @@ import AbonnementScreen from './src/screens/chauffeur/AbonnementScreen';
 import PaiementAbonnementScreen from './src/screens/chauffeur/PaiementAbonnementScreen';
 import CourseScolaireScreen from './src/screens/chauffeur/CourseScolaireScreen';
 import LivraisonChauffeurScreen from './src/screens/chauffeur/LivraisonChauffeurScreen';
+import ProposerTrajetScreen from './src/screens/chauffeur/ProposerTrajetScreen';
 import CourseEntranteScreen from './src/screens/chauffeur/CourseEntranteScreen';
 import NavigationChauffeurScreen from './src/screens/chauffeur/NavigationChauffeurScreen';
 import CourseEnCoursScreen from './src/screens/chauffeur/CourseEnCoursScreen';
@@ -59,6 +61,7 @@ export default function App() {
         <Stack.Screen name="Historique" component={HistoriqueScreen} />
         <Stack.Screen name="TransportScolaire" component={TransportScolaireScreen} />
         <Stack.Screen name="Livraison" component={LivraisonScreen} />
+        <Stack.Screen name="Covoiturage" component={CovoiturageScreen} />
         <Stack.Screen name="Commande" component={CommandeScreen} />
         <Stack.Screen name="Recherche" component={RechercheScreen} />
         <Stack.Screen name="Course" component={CourseScreen} />
@@ -75,6 +78,7 @@ export default function App() {
         <Stack.Screen name="PaiementAbonnement" component={PaiementAbonnementScreen} />
         <Stack.Screen name="CourseScolaire" component={CourseScolaireScreen} />
         <Stack.Screen name="LivraisonChauffeur" component={LivraisonChauffeurScreen} />
+        <Stack.Screen name="ProposerTrajet" component={ProposerTrajetScreen} />
         <Stack.Screen
           name="CourseEntrante"
           component={CourseEntranteScreen}
