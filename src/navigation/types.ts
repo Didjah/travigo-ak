@@ -24,6 +24,8 @@ export type RootStackParamList = {
   OTPChauffeur: { phoneNumber: string };
   DashboardChauffeur: undefined;
   HistoriqueChauffeur: undefined;
+  Abonnement: undefined;
+  PaiementAbonnement: { type: 'taxi' | 'tricycle' | 'premium' };
   CourseEntrante: {
     passagerPrenom: string;
     depart: string;

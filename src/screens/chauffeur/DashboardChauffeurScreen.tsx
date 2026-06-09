@@ -13,6 +13,14 @@ import { RootStackParamList } from '../../navigation/types';
 import { watchPosition } from '../../services/locationService';
 import { ecouterNouvellesCourses } from '../../services/courseService';
 import { getSessionUser } from '../../services/session';
+import {
+  getAbonnementActif,
+  getDernierAbonnement,
+  PLANS,
+  joursRestants,
+  estExpire,
+  type Abonnement,
+} from '../../services/abonnementService';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'DashboardChauffeur'>;
@@ -40,10 +48,36 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
   const [courses] = useState(3);
   const [gains] = useState(4500);
   const [positionGPS, setPositionGPS] = useState<{ lat: number; lng: number } | null>(null);
+  const [abonnement, setAbonnement] = useState<Abonnement | null>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stopWatchRef = useRef<(() => void) | null>(null);
   const stopRealtimeRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    async function chargerAbonnement() {
+      const user = getSessionUser();
+      if (!user) return;
+      const actif = await getAbonnementActif(user.id);
+      if (actif) { setAbonnement(actif); return; }
+      const dernier = await getDernierAbonnement(user.id);
+      setAbonnement(dernier);
+    }
+    chargerAbonnement();
+  }, []);
+
+  // Recharger abonnement au focus (retour depuis AbonnementScreen)
+  useEffect(() => {
+    const unsub = navigation.addListener('focus', async () => {
+      const user = getSessionUser();
+      if (!user) return;
+      const actif = await getAbonnementActif(user.id);
+      if (actif) { setAbonnement(actif); return; }
+      const dernier = await getDernierAbonnement(user.id);
+      setAbonnement(dernier);
+    });
+    return unsub;
+  }, [navigation]);
 
   useEffect(() => {
     if (disponible) {
@@ -120,10 +154,59 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
           <Text style={styles.salutation}>Bonjour,</Text>
           <Text style={styles.nom}>{CHAUFFEUR_NOM}</Text>
         </View>
-        <View style={styles.badgeChauffeur}>
+        <TouchableOpacity
+          style={styles.badgeChauffeur}
+          onPress={() => navigation.navigate('Abonnement')}
+          activeOpacity={0.8}
+        >
           <Text style={styles.badgeTexte}>CHAUFFEUR</Text>
-        </View>
+        </TouchableOpacity>
       </View>
+
+      {/* Badge abonnement */}
+      {(() => {
+        if (!abonnement) {
+          return (
+            <TouchableOpacity
+              style={styles.aboBanniereAlerte}
+              onPress={() => navigation.navigate('Abonnement')}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.aboBanniereAlerteTexte}>
+                ⚠️ Aucun abonnement actif — Souscrire maintenant
+              </Text>
+            </TouchableOpacity>
+          );
+        }
+        const expire = estExpire(abonnement) || abonnement.statut !== 'actif';
+        const jours = joursRestants(abonnement);
+        const plan = PLANS[abonnement.type];
+        if (expire) {
+          return (
+            <TouchableOpacity
+              style={styles.aboBanniereAlerte}
+              onPress={() => navigation.navigate('Abonnement')}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.aboBanniereAlerteTexte}>
+                🔴 Abonnement expiré — Renouveler pour rester actif
+              </Text>
+            </TouchableOpacity>
+          );
+        }
+        return (
+          <TouchableOpacity
+            style={[styles.aboBadgeActif, jours <= 5 && styles.aboBadgeExpireBientot]}
+            onPress={() => navigation.navigate('Abonnement')}
+            activeOpacity={0.85}
+          >
+            <View style={[styles.aboBadgePoint, jours <= 5 ? styles.aboBadgePointOrange : styles.aboBadgePointVert]} />
+            <Text style={styles.aboBadgeTexte}>
+              {plan.emoji} {plan.label} · {jours} jour{jours > 1 ? 's' : ''} restant{jours > 1 ? 's' : ''}
+            </Text>
+          </TouchableOpacity>
+        );
+      })()}
 
       {/* Toggle disponibilité */}
       <View style={[styles.toggleCard, disponible ? styles.toggleCardActif : styles.toggleCardInactif]}>
@@ -311,6 +394,56 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: COLORS.ivoire,
     letterSpacing: 1.5,
+  },
+
+  // Badge abonnement
+  aboBanniereAlerte: {
+    marginHorizontal: 24,
+    backgroundColor: '#3D1A00',
+    borderWidth: 1,
+    borderColor: COLORS.terracotta,
+    borderRadius: 12,
+    paddingVertical: 11,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  aboBanniereAlerteTexte: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFA07A',
+    textAlign: 'center',
+  },
+  aboBadgeActif: {
+    marginHorizontal: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#F0FFF4',
+    borderWidth: 1,
+    borderColor: '#86EFAC',
+    borderRadius: 12,
+    paddingVertical: 9,
+    paddingHorizontal: 14,
+  },
+  aboBadgeExpireBientot: {
+    backgroundColor: '#FFF7ED',
+    borderColor: '#FED7AA',
+  },
+  aboBadgePoint: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  aboBadgePointVert: {
+    backgroundColor: '#22C55E',
+  },
+  aboBadgePointOrange: {
+    backgroundColor: '#F97316',
+  },
+  aboBadgeTexte: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: COLORS.graphite,
   },
 
   // Toggle card

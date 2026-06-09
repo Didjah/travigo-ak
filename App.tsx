@@ -26,6 +26,8 @@ import LoginChauffeurScreen from './src/screens/chauffeur/LoginChauffeurScreen';
 import OTPChauffeurScreen from './src/screens/chauffeur/OTPChauffeurScreen';
 import DashboardChauffeurScreen from './src/screens/chauffeur/DashboardChauffeurScreen';
 import HistoriqueChauffeurScreen from './src/screens/chauffeur/HistoriqueChauffeurScreen';
+import AbonnementScreen from './src/screens/chauffeur/AbonnementScreen';
+import PaiementAbonnementScreen from './src/screens/chauffeur/PaiementAbonnementScreen';
 import CourseEntranteScreen from './src/screens/chauffeur/CourseEntranteScreen';
 import NavigationChauffeurScreen from './src/screens/chauffeur/NavigationChauffeurScreen';
 import CourseEnCoursScreen from './src/screens/chauffeur/CourseEnCoursScreen';
@@ -63,6 +65,8 @@ export default function App() {
         <Stack.Screen name="OTPChauffeur" component={OTPChauffeurScreen} />
         <Stack.Screen name="DashboardChauffeur" component={DashboardChauffeurScreen} />
         <Stack.Screen name="HistoriqueChauffeur" component={HistoriqueChauffeurScreen} />
+        <Stack.Screen name="Abonnement" component={AbonnementScreen} />
+        <Stack.Screen name="PaiementAbonnement" component={PaiementAbonnementScreen} />
         <Stack.Screen
           name="CourseEntrante"
           component={CourseEntranteScreen}
