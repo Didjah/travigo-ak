@@ -11,6 +11,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
 import { ChauffeurInfo, RootStackParamList } from '../../navigation/types';
+import { ecouterStatutCourse, getPrenomUtilisateur } from '../../services/courseService';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Recherche'>;
@@ -27,7 +28,7 @@ const CHAUFFEUR_SIMULE: ChauffeurInfo = {
 const DEV_DELAI = 5000;
 
 export default function RechercheScreen({ navigation, route }: Props) {
-  const { nom, destination } = route.params;
+  const { nom, destination, courseId } = route.params;
   const [secondes, setSecondes] = useState(0);
 
   const pulse1 = useRef(new Animated.Value(0)).current;
@@ -75,14 +76,42 @@ export default function RechercheScreen({ navigation, route }: Props) {
     return () => clearInterval(id);
   }, []);
 
-  // Simulation DEV : chauffeur trouvé après 5s
+  // DEV : chauffeur simulé après 5s
   useEffect(() => {
     if (!__DEV__) return;
     const timeout = setTimeout(() => {
-      navigation.replace('Course', { nom, chauffeur: CHAUFFEUR_SIMULE });
+      navigation.replace('Course', {
+        nom,
+        chauffeur: CHAUFFEUR_SIMULE,
+        courseId,
+      });
     }, DEV_DELAI);
     return () => clearTimeout(timeout);
-  }, [navigation, nom]);
+  }, [navigation, nom, courseId]);
+
+  // PROD : écoute Realtime du statut de la course
+  useEffect(() => {
+    if (__DEV__ || !courseId) return;
+
+    const unsubscribe = ecouterStatutCourse(courseId, async (course) => {
+      if (course.statut === 'acceptee' && course.chauffeur_id) {
+        const prenomChauffeur = await getPrenomUtilisateur(course.chauffeur_id);
+        const chauffeurInfo: ChauffeurInfo = {
+          nom: prenomChauffeur,
+          plaque: 'AB 0000 CI',
+          vehicule: 'Taxi — Gagnoa',
+          telephone: '',
+        };
+        navigation.replace('Course', {
+          nom,
+          chauffeur: chauffeurInfo,
+          courseId,
+        });
+      }
+    });
+
+    return unsubscribe;
+  }, [courseId, navigation, nom]);
 
   function handleAnnuler() {
     navigation.goBack();

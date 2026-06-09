@@ -16,6 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
 import { supabase } from '../../services/supabase';
+import { setSessionUser } from '../../services/session';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Profile'>;
@@ -60,9 +61,15 @@ export default function ProfileScreen({ navigation, route }: Props) {
       if (user) {
         await supabase.from('utilisateurs').upsert({
           id: user.id,
+          prenom: nomTrim,
           telephone: phoneNumber,
-          nom: nomTrim,
-          role: 'client',
+          role: 'passager',
+        });
+        setSessionUser({
+          id: user.id,
+          prenom: nomTrim,
+          telephone: phoneNumber,
+          role: 'passager',
         });
       }
     }

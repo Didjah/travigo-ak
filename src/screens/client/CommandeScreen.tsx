@@ -13,6 +13,8 @@ import { RouteProp } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
+import { creerCourse } from '../../services/courseService';
+import { getSessionUser } from '../../services/session';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Commande'>;
@@ -61,9 +63,26 @@ export default function CommandeScreen({ navigation, route }: Props) {
     fetchPosition();
   }, []);
 
-  function handleConfirmer() {
+  async function handleConfirmer() {
     if (!destination.trim()) return;
-    navigation.navigate('Recherche', { nom, destination: destination.trim() });
+
+    let courseId: string | undefined;
+
+    if (!__DEV__) {
+      const user = getSessionUser();
+      if (user) {
+        const prixNumerique = destination.trim().length < 8 ? 650 :
+          destination.trim().length < 18 ? 1150 : 1500;
+        const id = await creerCourse(user.id, depart, destination.trim(), prixNumerique);
+        courseId = id ?? undefined;
+      }
+    }
+
+    navigation.navigate('Recherche', {
+      nom,
+      destination: destination.trim(),
+      courseId,
+    });
   }
 
   const peutConfirmer = destination.trim().length > 0 && !departChargement;

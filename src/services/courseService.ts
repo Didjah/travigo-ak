@@ -147,3 +147,72 @@ export async function getCourse(courseId: string): Promise<Course | null> {
   if (error || !data) return null;
   return data as Course;
 }
+
+/**
+ * Récupère le prénom d'un utilisateur depuis la table utilisateurs.
+ */
+export async function getPrenomUtilisateur(userId: string): Promise<string> {
+  const { data } = await supabase
+    .from('utilisateurs')
+    .select('prenom')
+    .eq('id', userId)
+    .single();
+  return data?.prenom ?? 'Inconnu';
+}
+
+/**
+ * Écoute le changement de statut d'une course (ex: passager attend qu'un chauffeur accepte).
+ * Appelle le callback avec le record mis à jour dès qu'un UPDATE se produit.
+ * Retourne une fonction de cleanup.
+ */
+export function ecouterStatutCourse(
+  courseId: string,
+  callback: (course: Course) => void
+): () => void {
+  const channel = supabase
+    .channel(`course-statut-${courseId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'courses',
+        filter: `id=eq.${courseId}`,
+      },
+      (payload) => {
+        callback(payload.new as Course);
+      }
+    )
+    .subscribe();
+
+  return () => supabase.removeChannel(channel);
+}
+
+/**
+ * Écoute les nouvelles courses en_attente pour le tableau de bord chauffeur.
+ * Appelle le callback pour chaque INSERT dont le statut est 'en_attente'.
+ * Retourne une fonction de cleanup.
+ */
+export function ecouterNouvellesCourses(
+  callback: (course: Course) => void
+): () => void {
+  const channel = supabase
+    .channel('nouvelles-courses')
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'courses',
+      },
+      (payload) => {
+        const course = payload.new as Course;
+        if (course.statut === 'en_attente') {
+          callback(course);
+        }
+      }
+    )
+    .subscribe();
+
+  return () => supabase.removeChannel(channel);
+}

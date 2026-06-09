@@ -13,6 +13,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
+import { supabase } from '../../services/supabase';
+import { setSessionUser } from '../../services/session';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'OTPChauffeur'>;
@@ -69,13 +71,57 @@ export default function OTPChauffeurScreen({ navigation, route }: Props) {
     }
     setChargement(true);
     setErreur('');
-    await new Promise((r) => setTimeout(r, 600));
-    setChargement(false);
-    if (code === DEV_CODE) {
-      navigation.replace('DashboardChauffeur');
-    } else {
-      setErreur(`Code incorrect. En mode DEV, utilisez ${DEV_CODE}.`);
+
+    if (__DEV__) {
+      await new Promise((r) => setTimeout(r, 600));
+      setChargement(false);
+      if (code === DEV_CODE) {
+        navigation.replace('DashboardChauffeur');
+      } else {
+        setErreur(`Code incorrect. En mode DEV, utilisez ${DEV_CODE}.`);
+      }
+      return;
     }
+
+    // Mode production : vérification Supabase
+    const { data: verifyData, error } = await supabase.auth.verifyOtp({
+      phone: `+225${phoneNumber}`,
+      token: code,
+      type: 'sms',
+    });
+    if (error || !verifyData.user) {
+      setChargement(false);
+      setErreur('Code incorrect. Veuillez réessayer.');
+      return;
+    }
+
+    const userId = verifyData.user.id;
+
+    // Upsert dans utilisateurs avec role=chauffeur
+    await supabase.from('utilisateurs').upsert({
+      id: userId,
+      prenom: '',
+      telephone: phoneNumber,
+      role: 'chauffeur',
+    });
+
+    // Récupérer le prénom s'il existe déjà
+    const { data: existing } = await supabase
+      .from('utilisateurs')
+      .select('id, prenom, telephone, role')
+      .eq('id', userId)
+      .single();
+
+    setChargement(false);
+
+    setSessionUser({
+      id: userId,
+      prenom: existing?.prenom ?? '',
+      telephone: phoneNumber,
+      role: 'chauffeur',
+    });
+
+    navigation.replace('DashboardChauffeur');
   }
 
   function handleRenvoyer() {

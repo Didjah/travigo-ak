@@ -15,8 +15,8 @@ export type RootStackParamList = {
   // Écrans passager
   Home: { nom: string };
   Commande: { nom: string };
-  Recherche: { nom: string; destination: string };
-  Course: { nom: string; chauffeur: ChauffeurInfo };
+  Recherche: { nom: string; destination: string; courseId?: string };
+  Course: { nom: string; chauffeur: ChauffeurInfo; courseId?: string };
 
   // Écrans chauffeur
   LoginChauffeur: undefined;
@@ -27,6 +27,7 @@ export type RootStackParamList = {
     depart: string;
     destination: string;
     prixEstime: string;
+    courseId?: string;
   };
   NavigationChauffeur: {
     passagerPrenom: string;

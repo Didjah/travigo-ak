@@ -14,6 +14,7 @@ import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
 import { supabase } from '../../services/supabase';
+import { setSessionUser } from '../../services/session';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'OTP'>;
@@ -93,15 +94,45 @@ export default function OTPScreen({ navigation, route }: Props) {
     }
 
     // Mode production : vérification Supabase
-    const { error } = await supabase.auth.verifyOtp({
+    const { data: verifyData, error } = await supabase.auth.verifyOtp({
       phone: `+225${phoneNumber}`,
       token: code,
       type: 'sms',
     });
-    setChargement(false);
-    if (error) {
+    if (error || !verifyData.user) {
+      setChargement(false);
       setErreur('Code incorrect. Veuillez réessayer.');
+      return;
+    }
+
+    const userId = verifyData.user.id;
+
+    // Vérifier si l'utilisateur existe déjà dans la table
+    const { data: existing } = await supabase
+      .from('utilisateurs')
+      .select('id, prenom, telephone, role')
+      .eq('id', userId)
+      .single();
+
+    setChargement(false);
+
+    if (existing?.prenom) {
+      // Utilisateur connu → session + Home directement
+      setSessionUser({
+        id: existing.id,
+        prenom: existing.prenom,
+        telephone: existing.telephone,
+        role: 'passager',
+      });
+      navigation.replace('Home', { nom: existing.prenom });
     } else {
+      // Nouveau → insérer avec prenom vide, compléter dans ProfileScreen
+      await supabase.from('utilisateurs').upsert({
+        id: userId,
+        prenom: '',
+        telephone: phoneNumber,
+        role: 'passager',
+      });
       navigation.replace('Profile', { phoneNumber });
     }
   }

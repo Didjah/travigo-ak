@@ -10,6 +10,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
+import { accepterCourse } from '../../services/courseService';
+import { getSessionUser } from '../../services/session';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'CourseEntrante'>;
@@ -17,7 +19,7 @@ type Props = {
 };
 
 export default function CourseEntranteScreen({ navigation, route }: Props) {
-  const { passagerPrenom, depart, destination, prixEstime } = route.params;
+  const { passagerPrenom, depart, destination, prixEstime, courseId } = route.params;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
@@ -28,12 +30,20 @@ export default function CourseEntranteScreen({ navigation, route }: Props) {
     ]).start();
   }, []);
 
-  function handleAccepter() {
+  async function handleAccepter() {
+    // PROD : enregistrer l'acceptation dans Supabase
+    if (!__DEV__ && courseId) {
+      const user = getSessionUser();
+      if (user) {
+        await accepterCourse(courseId, user.id);
+      }
+    }
     navigation.replace('NavigationChauffeur', {
       passagerPrenom,
       depart,
       destination,
       prixEstime,
+      courseId,
     });
   }
 

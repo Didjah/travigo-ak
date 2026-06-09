@@ -11,12 +11,13 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
 import { watchPosition } from '../../services/locationService';
+import { ecouterNouvellesCourses } from '../../services/courseService';
+import { getSessionUser } from '../../services/session';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'DashboardChauffeur'>;
 };
 
-const CHAUFFEUR_NOM = 'Konan Yao';
 const CARTE_WIDTH = 300;
 const CARTE_HEIGHT = 180;
 const GAGNOA = { lat: 5.9306, lng: -5.9631 };
@@ -32,6 +33,9 @@ function latLngVersXY(lat: number, lng: number) {
 }
 
 export default function DashboardChauffeurScreen({ navigation }: Props) {
+  const sessionUser = getSessionUser();
+  const CHAUFFEUR_NOM = sessionUser?.prenom || 'Chauffeur';
+
   const [disponible, setDisponible] = useState(false);
   const [courses] = useState(3);
   const [gains] = useState(4500);
@@ -39,6 +43,7 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stopWatchRef = useRef<(() => void) | null>(null);
+  const stopRealtimeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     if (disponible) {
@@ -50,15 +55,13 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
       );
       pulse.start();
 
-      // Démarrer la surveillance GPS en arrière-plan
-      watchPosition((lat, lng) => {
-        setPositionGPS({ lat, lng });
-      }).then((stop) => {
+      // GPS local
+      watchPosition((lat, lng) => setPositionGPS({ lat, lng })).then((stop) => {
         stopWatchRef.current = stop;
       });
 
-      // Simulation course entrante après 8 secondes en mode DEV
       if (__DEV__) {
+        // Simulation DEV : course entrante après 8s
         timerRef.current = setTimeout(() => {
           navigation.navigate('CourseEntrante', {
             passagerPrenom: 'Awa',
@@ -67,6 +70,19 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
             prixEstime: '800 – 1 200 FCFA',
           });
         }, 8000);
+      } else {
+        // PROD : écoute Realtime des nouvelles courses en_attente
+        stopRealtimeRef.current = ecouterNouvellesCourses((course) => {
+          navigation.navigate('CourseEntrante', {
+            passagerPrenom: 'Passager',
+            depart: course.depart,
+            destination: course.destination,
+            prixEstime: course.prix
+              ? `${course.prix.toLocaleString('fr-FR')} FCFA`
+              : '— FCFA',
+            courseId: course.id,
+          });
+        });
       }
 
       return () => {
@@ -74,12 +90,16 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
         if (timerRef.current) clearTimeout(timerRef.current);
         stopWatchRef.current?.();
         stopWatchRef.current = null;
+        stopRealtimeRef.current?.();
+        stopRealtimeRef.current = null;
       };
     } else {
       pulseAnim.setValue(1);
       if (timerRef.current) clearTimeout(timerRef.current);
       stopWatchRef.current?.();
       stopWatchRef.current = null;
+      stopRealtimeRef.current?.();
+      stopRealtimeRef.current = null;
     }
   }, [disponible]);
 
