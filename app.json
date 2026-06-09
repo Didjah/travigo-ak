@@ -14,16 +14,49 @@
       "backgroundColor": "#FAF8F4"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "TRAVIGO-AK utilise votre position pour afficher votre emplacement sur la carte et vous mettre en relation avec un chauffeur.",
+        "NSLocationAlwaysUsageDescription": "TRAVIGO-AK utilise votre position en arrière-plan pour envoyer votre GPS au passager pendant la course.",
+        "UIBackgroundModes": ["location", "fetch", "remote-notification"]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundColor": "#FAF8F4"
-      }
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": ""
+        }
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#C0522A",
+          "sounds": []
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "TRAVIGO-AK utilise votre position pour la navigation et le suivi GPS de la course."
+        }
+      ]
+    ]
   }
 }

@@ -15,6 +15,7 @@ import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
 import { supabase } from '../../services/supabase';
 import { setSessionUser } from '../../services/session';
+import { initialiserNotifications, enregistrerToken } from '../../services/notificationService';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'OTP'>;
@@ -116,8 +117,12 @@ export default function OTPScreen({ navigation, route }: Props) {
 
     setChargement(false);
 
+    // Enregistrer le token push en arrière-plan
+    initialiserNotifications().then((token) => {
+      if (token) enregistrerToken(userId, token);
+    });
+
     if (existing?.prenom) {
-      // Utilisateur connu → session + Home directement
       setSessionUser({
         id: existing.id,
         prenom: existing.prenom,
@@ -126,7 +131,6 @@ export default function OTPScreen({ navigation, route }: Props) {
       });
       navigation.replace('Home', { nom: existing.prenom });
     } else {
-      // Nouveau → insérer avec prenom vide, compléter dans ProfileScreen
       await supabase.from('utilisateurs').upsert({
         id: userId,
         prenom: '',

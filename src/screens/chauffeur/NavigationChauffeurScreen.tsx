@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
+import CarteMapView, { GAGNOA_REGION, MarqueurCarte } from '../../components/map/CarteMapView';
+import { watchPosition } from '../../services/locationService';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'NavigationChauffeur'>;
@@ -17,13 +19,23 @@ type Props = {
 };
 
 export default function NavigationChauffeurScreen({ navigation, route }: Props) {
-  const { passagerPrenom, depart, destination, prixEstime } = route.params;
+  const { passagerPrenom, depart, destination, prixEstime, courseId } = route.params;
+  const [positionChauffeur, setPositionChauffeur] = useState<{ latitude: number; longitude: number } | null>(null);
+
+  useEffect(() => {
+    let cleanup: (() => void) | null = null;
+    watchPosition((lat, lng) => {
+      setPositionChauffeur({ latitude: lat, longitude: lng });
+    }).then((fn) => { cleanup = fn; });
+    return () => { cleanup?.(); };
+  }, []);
 
   function handlePassagerPris() {
     navigation.replace('CourseEnCours', {
       passagerPrenom,
       destination,
       prixEstime,
+      courseId,
     });
   }
 
@@ -38,48 +50,21 @@ export default function NavigationChauffeurScreen({ navigation, route }: Props) 
         <Text style={styles.titre}>Navigation</Text>
       </View>
 
-      {/* Carte stylisée avec itinéraire */}
+      {/* Carte OpenStreetMap avec position GPS */}
       <View style={styles.carteWrapper}>
-        <View style={styles.carte}>
-          {/* Parcs */}
-          <View style={[styles.parc, { top: '8%', left: '5%', width: 50, height: 30 }]} />
-          <View style={[styles.parc, { top: '60%', right: '5%', width: 40, height: 25 }]} />
-
-          {/* Routes */}
-          <View style={[styles.routePrincipale, { top: '38%', left: 0, right: 0, height: 4 }]} />
-          <View style={[styles.routePrincipale, { left: '42%', top: 0, bottom: 0, width: 4 }]} />
-          <View style={[styles.routeSecondaire, { top: '65%', left: 0, right: 0, height: 2 }]} />
-          <View style={[styles.routeSecondaire, { left: '20%', top: 0, bottom: 0, width: 2 }]} />
-
-          {/* Itinéraire mis en évidence */}
-          <View style={styles.itineraire} />
-
-          {/* Bâtiments */}
-          <View style={[styles.batiment, { top: '22%', left: '5%', width: 40, height: 14 }]} />
-          <View style={[styles.batiment, { top: '43%', left: '48%', width: 35, height: 18 }]} />
-          <View style={[styles.batiment, { top: '70%', left: '5%', width: 32, height: 16 }]} />
-
-          {/* Marqueur chauffeur */}
-          <View style={[styles.marqueurContainer, { top: '55%', left: '25%' }]}>
-            <View style={[styles.marqueurCorps, { backgroundColor: '#22C55E' }]}>
-              <Text style={styles.marqueurIcone}>🚖</Text>
-            </View>
-            <View style={styles.marqueurOmbre} />
-          </View>
-
-          {/* Marqueur passager */}
-          <View style={[styles.marqueurContainer, { top: '25%', left: '55%' }]}>
-            <View style={[styles.marqueurCorps, { backgroundColor: COLORS.terracotta }]}>
-              <Text style={styles.marqueurIcone}>👤</Text>
-            </View>
-            <View style={styles.marqueurOmbre} />
-          </View>
-
-          {/* Badge ville */}
-          <View style={styles.badgeVille}>
-            <Text style={styles.badgeVilleTexte}>Gagnoa, CI</Text>
-          </View>
-        </View>
+        <CarteMapView
+          hauteur={180}
+          interactive={false}
+          centrerSur={positionChauffeur ?? { latitude: GAGNOA_REGION.latitude, longitude: GAGNOA_REGION.longitude }}
+          marqueurs={positionChauffeur ? [{
+            id: 'chauffeur',
+            latitude: positionChauffeur.latitude,
+            longitude: positionChauffeur.longitude,
+            couleur: '#22C55E',
+            emoji: '🚖',
+            titre: 'Votre position',
+          }] : []}
+        />
       </View>
 
       {/* Infos course */}

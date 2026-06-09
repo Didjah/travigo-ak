@@ -12,6 +12,8 @@ import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
 import { accepterCourse } from '../../services/courseService';
 import { getSessionUser } from '../../services/session';
+import { supabase } from '../../services/supabase';
+import { notifierUtilisateur } from '../../services/notificationService';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'CourseEntrante'>;
@@ -31,11 +33,24 @@ export default function CourseEntranteScreen({ navigation, route }: Props) {
   }, []);
 
   async function handleAccepter() {
-    // PROD : enregistrer l'acceptation dans Supabase
     if (!__DEV__ && courseId) {
       const user = getSessionUser();
       if (user) {
         await accepterCourse(courseId, user.id);
+        // Notifier le passager que sa course a été acceptée
+        const { data: courseData } = await supabase
+          .from('courses')
+          .select('passager_id')
+          .eq('id', courseId)
+          .single();
+        if (courseData?.passager_id) {
+          notifierUtilisateur(
+            courseData.passager_id,
+            'Chauffeur trouvé !',
+            'Votre taxi arrive bientôt.',
+            { courseId }
+          );
+        }
       }
     }
     navigation.replace('NavigationChauffeur', {

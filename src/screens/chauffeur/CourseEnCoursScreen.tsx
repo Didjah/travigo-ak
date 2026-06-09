@@ -12,8 +12,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
-import { startTrackingChauffeur, stopTracking } from '../../services/locationService';
+import { startTrackingChauffeur, stopTracking, watchPosition } from '../../services/locationService';
 import { terminerCourse } from '../../services/courseService';
+import CarteMapView, { GAGNOA_REGION } from '../../components/map/CarteMapView';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'CourseEnCours'>;
@@ -38,6 +39,7 @@ export default function CourseEnCoursScreen({ navigation, route }: Props) {
   const gainFinal = extrairePrix(prixEstime);
   const [duree, setDuree] = useState(0);
   const [gpsActif, setGpsActif] = useState(false);
+  const [positionActuelle, setPositionActuelle] = useState<{ latitude: number; longitude: number } | null>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   // Démarrer le tracking GPS dès le montage de l'écran
@@ -60,6 +62,15 @@ export default function CourseEnCoursScreen({ navigation, route }: Props) {
   useEffect(() => {
     const id = setInterval(() => setDuree((d) => d + 1), 1000);
     return () => clearInterval(id);
+  }, []);
+
+  // Écouter la position GPS locale pour l'affichage sur la carte
+  useEffect(() => {
+    let cleanup: (() => void) | null = null;
+    watchPosition((lat, lng) => {
+      setPositionActuelle({ latitude: lat, longitude: lng });
+    }).then((fn) => { cleanup = fn; });
+    return () => { cleanup?.(); };
   }, []);
 
   useEffect(() => {
@@ -154,45 +165,26 @@ export default function CourseEnCoursScreen({ navigation, route }: Props) {
         </View>
       </View>
 
-      {/* Carte stylisée */}
+      {/* Carte OpenStreetMap — position GPS en direct */}
       <View style={styles.carteWrapper}>
-        <View style={styles.carte}>
-          <View style={[styles.parc, { top: '8%', left: '5%', width: 50, height: 30 }]} />
-          <View style={[styles.routePrincipale, { top: '38%', left: 0, right: 0, height: 4 }]} />
-          <View style={[styles.routePrincipale, { left: '42%', top: 0, bottom: 0, width: 4 }]} />
-          <View style={[styles.routeSecondaire, { top: '65%', left: 0, right: 0, height: 2 }]} />
-          <View style={[styles.batiment, { top: '22%', left: '5%', width: 40, height: 14 }]} />
-          <View style={[styles.batiment, { top: '43%', left: '48%', width: 35, height: 18 }]} />
-          <View style={[styles.batiment, { top: '70%', left: '25%', width: 38, height: 16 }]} />
-
-          {/* Trajet mis en évidence */}
-          <View style={styles.trajetLigne} />
-
-          {/* Marqueur voiture en mouvement */}
-          <View style={[styles.marqueurContainer, { top: '38%', left: '30%' }]}>
-            <View style={styles.marqueurCorps}>
-              <Text style={styles.marqueurIcone}>🚖</Text>
-            </View>
-          </View>
-
-          {/* Marqueur destination */}
-          <View style={[styles.marqueurContainer, { top: '38%', left: '65%' }]}>
-            <View style={[styles.marqueurCorps, { backgroundColor: COLORS.terracotta }]}>
-              <Text style={styles.marqueurIcone}>🏁</Text>
-            </View>
-          </View>
-
-          {/* Badge GPS envoi */}
-          <View style={[styles.badgeGPS, gpsActif && styles.badgeGPSActif]}>
-            <View style={[styles.badgeGPSPoint, gpsActif && styles.badgeGPSPointActif]} />
-            <Text style={styles.badgeGPSTexte}>
-              {gpsActif ? 'GPS ↑' : 'GPS...'}
-            </Text>
-          </View>
-
-          <View style={styles.badgeVille}>
-            <Text style={styles.badgeVilleTexte}>Gagnoa, CI</Text>
-          </View>
+        <CarteMapView
+          hauteur={150}
+          interactive={false}
+          centrerSur={positionActuelle ?? { latitude: GAGNOA_REGION.latitude, longitude: GAGNOA_REGION.longitude }}
+          marqueurs={positionActuelle ? [{
+            id: 'chauffeur',
+            latitude: positionActuelle.latitude,
+            longitude: positionActuelle.longitude,
+            couleur: '#22C55E',
+            emoji: '🚖',
+            titre: 'Votre position',
+          }] : []}
+        />
+        <View style={[styles.badgeGPS, gpsActif && styles.badgeGPSActif]} pointerEvents="none">
+          <View style={[styles.badgeGPSPoint, gpsActif && styles.badgeGPSPointActif]} />
+          <Text style={styles.badgeGPSTexte}>
+            {gpsActif ? 'GPS ↑' : 'GPS...'}
+          </Text>
         </View>
       </View>
 

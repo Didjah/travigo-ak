@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { RootStackParamList } from './src/navigation/types';
+import { initialiserNotifications } from './src/services/notificationService';
 
 // Écrans partagés
 import SplashScreen from './src/screens/shared/SplashScreen';
@@ -27,6 +28,11 @@ import CourseEnCoursScreen from './src/screens/chauffeur/CourseEnCoursScreen';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
+  useEffect(() => {
+    // Initialiser les permissions push au démarrage (silencieux)
+    initialiserNotifications();
+  }, []);
+
   return (
     <NavigationContainer>
       <StatusBar style="dark" backgroundColor="#FAF8F4" />

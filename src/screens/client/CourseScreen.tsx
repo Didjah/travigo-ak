@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,38 +7,18 @@ import {
   SafeAreaView,
   Linking,
   Alert,
-  Animated,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
 import { ecouterPositionChauffeur, type PositionChauffeur } from '../../services/courseService';
+import CarteMapView, { GAGNOA_REGION } from '../../components/map/CarteMapView';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Course'>;
   route: RouteProp<RootStackParamList, 'Course'>;
 };
-
-// Coordonnées de référence Gagnoa pour normaliser l'affichage sur la carte SVG
-const GAGNOA_CENTER = { lat: 5.9306, lng: -5.9631 };
-const CARTE_WIDTH = 300;
-const CARTE_HEIGHT = 180;
-const ECHELLE_LAT = 2000;
-const ECHELLE_LNG = 2000;
-
-function latLngVersXY(
-  lat: number,
-  lng: number
-): { x: number; y: number } {
-  const x = CARTE_WIDTH / 2 + (lng - GAGNOA_CENTER.lng) * ECHELLE_LNG;
-  const y = CARTE_HEIGHT / 2 - (lat - GAGNOA_CENTER.lat) * ECHELLE_LAT;
-  // Clamp pour rester dans la carte
-  return {
-    x: Math.min(Math.max(x, 12), CARTE_WIDTH - 12),
-    y: Math.min(Math.max(y, 12), CARTE_HEIGHT - 12),
-  };
-}
 
 export default function CourseScreen({ navigation, route }: Props) {
   const { nom, chauffeur } = route.params;
@@ -46,7 +26,6 @@ export default function CourseScreen({ navigation, route }: Props) {
 
   const [positionChauffeur, setPositionChauffeur] = useState<PositionChauffeur | null>(null);
   const [gpsActif, setGpsActif] = useState(false);
-  const pulseAnim = useRef(new Animated.Value(1)).current;
 
   // Abonnement Supabase Realtime à la position du chauffeur
   useEffect(() => {
@@ -62,18 +41,6 @@ export default function CourseScreen({ navigation, route }: Props) {
       setGpsActif(false);
     };
   }, [courseId]);
-
-  // Animation pulsation du marqueur chauffeur
-  useEffect(() => {
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.3, duration: 600, useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
-      ])
-    );
-    pulse.start();
-    return () => pulse.stop();
-  }, []);
 
   async function handleAppeler() {
     const url = `tel:${chauffeur.telephone}`;
@@ -96,11 +63,6 @@ export default function CourseScreen({ navigation, route }: Props) {
     .join('')
     .toUpperCase();
 
-  // Position du marqueur chauffeur sur la carte
-  const marqueurPos = positionChauffeur
-    ? latLngVersXY(positionChauffeur.lat, positionChauffeur.lng)
-    : { x: CARTE_WIDTH * 0.35, y: CARTE_HEIGHT * 0.55 };
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.inner}>
@@ -116,63 +78,27 @@ export default function CourseScreen({ navigation, route }: Props) {
 
         {/* Carte GPS temps réel */}
         <View style={styles.carteWrapper}>
-          <View style={styles.carte}>
-            {/* Parcs */}
-            <View style={[styles.parc, { top: '8%', left: '5%', width: 50, height: 30 }]} />
-            <View style={[styles.parc, { top: '60%', right: '5%', width: 40, height: 25 }]} />
-
-            {/* Routes principales */}
-            <View style={[styles.routePrincipale, { top: '38%', left: 0, right: 0, height: 4 }]} />
-            <View style={[styles.routePrincipale, { left: '42%', top: 0, bottom: 0, width: 4 }]} />
-
-            {/* Routes secondaires */}
-            <View style={[styles.routeSecondaire, { top: '65%', left: 0, right: 0, height: 2 }]} />
-            <View style={[styles.routeSecondaire, { top: '18%', left: 0, right: 0, height: 2 }]} />
-            <View style={[styles.routeSecondaire, { left: '20%', top: 0, bottom: 0, width: 2 }]} />
-            <View style={[styles.routeSecondaire, { left: '70%', top: 0, bottom: 0, width: 2 }]} />
-
-            {/* Bâtiments */}
-            <View style={[styles.batiment, { top: '22%', left: '5%', width: 40, height: 14 }]} />
-            <View style={[styles.batiment, { top: '22%', left: '25%', width: 30, height: 14 }]} />
-            <View style={[styles.batiment, { top: '43%', left: '48%', width: 35, height: 18 }]} />
-            <View style={[styles.batiment, { top: '43%', left: '74%', width: 28, height: 18 }]} />
-            <View style={[styles.batiment, { top: '70%', left: '5%', width: 32, height: 16 }]} />
-            <View style={[styles.batiment, { top: '70%', left: '25%', width: 38, height: 16 }]} />
-
-            {/* Marqueur passager (position fixe) */}
-            <View style={[styles.marqueurPassager, { top: '35%', left: '62%' }]}>
-              <View style={styles.marqueurPassagerCorps}>
-                <Text style={styles.marqueurIcone}>👤</Text>
-              </View>
-              <View style={styles.marqueurOmbre} />
-            </View>
-
-            {/* Marqueur chauffeur — position GPS temps réel */}
-            <Animated.View
-              style={[
-                styles.marqueurChauffeur,
-                {
-                  left: marqueurPos.x - 18,
-                  top: marqueurPos.y - 18,
-                  transform: [{ scale: pulseAnim }],
-                },
-              ]}
-            >
-              <Text style={styles.marqueurIcone}>🚖</Text>
-            </Animated.View>
-
-            {/* Badge GPS */}
-            <View style={[styles.badgeGPS, gpsActif && styles.badgeGPSActif]}>
-              <View style={[styles.badgeGPSPoint, gpsActif && styles.badgeGPSPointActif]} />
-              <Text style={styles.badgeGPSTexte}>
-                {gpsActif ? 'GPS actif' : 'GPS...'}
-              </Text>
-            </View>
-
-            {/* Badge ville */}
-            <View style={styles.badgeVille}>
-              <Text style={styles.badgeVilleTexte}>Gagnoa, CI</Text>
-            </View>
+          <CarteMapView
+            hauteur={160}
+            interactive={false}
+            centrerSur={positionChauffeur
+              ? { latitude: positionChauffeur.lat, longitude: positionChauffeur.lng }
+              : { latitude: GAGNOA_REGION.latitude, longitude: GAGNOA_REGION.longitude }
+            }
+            marqueurs={positionChauffeur ? [{
+              id: 'chauffeur',
+              latitude: positionChauffeur.lat,
+              longitude: positionChauffeur.lng,
+              couleur: '#22C55E',
+              emoji: '🚖',
+              titre: chauffeur.nom,
+            }] : []}
+          />
+          <View style={[styles.badgeGPS, gpsActif && styles.badgeGPSActif]} pointerEvents="none">
+            <View style={[styles.badgeGPSPoint, gpsActif && styles.badgeGPSPointActif]} />
+            <Text style={styles.badgeGPSTexte}>
+              {gpsActif ? 'GPS actif' : 'GPS...'}
+            </Text>
           </View>
         </View>
 

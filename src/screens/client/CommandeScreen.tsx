@@ -15,6 +15,8 @@ import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
 import { creerCourse } from '../../services/courseService';
 import { getSessionUser } from '../../services/session';
+import { notifierChauffeursDispo } from '../../services/notificationService';
+import CarteMapView, { GAGNOA_REGION } from '../../components/map/CarteMapView';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Commande'>;
@@ -34,6 +36,7 @@ export default function CommandeScreen({ navigation, route }: Props) {
   const [depart, setDepart] = useState('');
   const [departChargement, setDepartChargement] = useState(true);
   const [destination, setDestination] = useState('');
+  const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
     async function fetchPosition() {
@@ -44,6 +47,7 @@ export default function CommandeScreen({ navigation, route }: Props) {
           return;
         }
         const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+        setCoords({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
         const geocode = await Location.reverseGeocodeAsync(loc.coords);
         if (geocode[0]) {
           const g = geocode[0];
@@ -75,6 +79,9 @@ export default function CommandeScreen({ navigation, route }: Props) {
           destination.trim().length < 18 ? 1150 : 1500;
         const id = await creerCourse(user.id, depart, destination.trim(), prixNumerique);
         courseId = id ?? undefined;
+        if (id) {
+          notifierChauffeursDispo('Nouvelle course !', 'Course disponible à Gagnoa.', { courseId: id });
+        }
       }
     }
 
@@ -106,46 +113,21 @@ export default function CommandeScreen({ navigation, route }: Props) {
         <Text style={styles.sousTitre}>Gagnoa, Côte d'Ivoire</Text>
       </View>
 
-      {/* Carte stylisée */}
+      {/* Carte OpenStreetMap */}
       <View style={styles.carteWrapper}>
-        {/* Fond ville */}
-        <View style={styles.carte}>
-          {/* Parcs / espaces verts */}
-          <View style={[styles.parc, { top: '8%', left: '5%', width: 50, height: 30 }]} />
-          <View style={[styles.parc, { top: '60%', right: '5%', width: 40, height: 25 }]} />
-
-          {/* Routes principales */}
-          <View style={[styles.routePrincipale, { top: '38%', left: 0, right: 0, height: 4 }]} />
-          <View style={[styles.routePrincipale, { left: '42%', top: 0, bottom: 0, width: 4 }]} />
-
-          {/* Routes secondaires */}
-          <View style={[styles.routeSecondaire, { top: '65%', left: 0, right: 0, height: 2 }]} />
-          <View style={[styles.routeSecondaire, { top: '18%', left: 0, right: 0, height: 2 }]} />
-          <View style={[styles.routeSecondaire, { left: '20%', top: 0, bottom: 0, width: 2 }]} />
-          <View style={[styles.routeSecondaire, { left: '70%', top: 0, bottom: 0, width: 2 }]} />
-
-          {/* Bâtiments */}
-          <View style={[styles.batiment, { top: '22%', left: '5%', width: 40, height: 14 }]} />
-          <View style={[styles.batiment, { top: '22%', left: '25%', width: 30, height: 14 }]} />
-          <View style={[styles.batiment, { top: '43%', left: '48%', width: 35, height: 18 }]} />
-          <View style={[styles.batiment, { top: '43%', left: '74%', width: 28, height: 18 }]} />
-          <View style={[styles.batiment, { top: '70%', left: '5%', width: 32, height: 16 }]} />
-          <View style={[styles.batiment, { top: '70%', left: '25%', width: 38, height: 16 }]} />
-          <View style={[styles.batiment, { top: '70%', left: '48%', width: 24, height: 16 }]} />
-
-          {/* Marqueur position */}
-          <View style={styles.marqueurContainer}>
-            <View style={styles.marqueurOmbre} />
-            <View style={styles.marqueurCorps}>
-              <View style={styles.marqueurPoint} />
-            </View>
-          </View>
-
-          {/* Badge ville */}
-          <View style={styles.badgeVille}>
-            <Text style={styles.badgeVilleTexte}>Gagnoa, CI</Text>
-          </View>
-        </View>
+        <CarteMapView
+          hauteur={180}
+          interactive={false}
+          centrerSur={coords ?? { latitude: GAGNOA_REGION.latitude, longitude: GAGNOA_REGION.longitude }}
+          marqueurs={coords ? [{
+            id: 'depart',
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            couleur: COLORS.terracotta,
+            emoji: '📍',
+            titre: 'Votre position',
+          }] : []}
+        />
       </View>
 
       {/* Formulaire trajet */}

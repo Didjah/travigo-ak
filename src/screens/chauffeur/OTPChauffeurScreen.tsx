@@ -15,6 +15,7 @@ import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
 import { supabase } from '../../services/supabase';
 import { setSessionUser } from '../../services/session';
+import { initialiserNotifications, enregistrerToken } from '../../services/notificationService';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'OTPChauffeur'>;
@@ -119,6 +120,11 @@ export default function OTPChauffeurScreen({ navigation, route }: Props) {
       prenom: existing?.prenom ?? '',
       telephone: phoneNumber,
       role: 'chauffeur',
+    });
+
+    // Enregistrer le token push en arrière-plan
+    initialiserNotifications().then((token) => {
+      if (token) enregistrerToken(userId, token);
     });
 
     navigation.replace('DashboardChauffeur');
