@@ -106,6 +106,7 @@ export default function RechercheScreen({ navigation, route }: Props) {
           nom,
           chauffeur: chauffeurInfo,
           courseId,
+          montant: course.prix ?? 1000,
         });
       }
     });

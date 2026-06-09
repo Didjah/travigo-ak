@@ -97,16 +97,12 @@ export default function CourseEnCoursScreen({ navigation, route }: Props) {
             stopTracking();
             if (courseId) {
               await terminerCourse(courseId);
+              // Le passager reçoit la notification de fin via Realtime → PaiementScreen
             }
             Alert.alert(
-              'Course terminée ! 🎉',
-              `Gain encaissé : ${gainFinal.toLocaleString('fr-FR')} FCFA\nDurée : ${formaterDuree(duree)}`,
-              [
-                {
-                  text: 'Super !',
-                  onPress: () => navigation.navigate('DashboardChauffeur'),
-                },
-              ]
+              '🎉 Course terminée',
+              `Gain : ${gainFinal.toLocaleString('fr-FR')} FCFA\nDurée : ${formaterDuree(duree)}`,
+              [{ text: 'Super !', onPress: () => navigation.replace('DashboardChauffeur') }]
             );
           },
         },

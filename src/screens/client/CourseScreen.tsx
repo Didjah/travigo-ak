@@ -12,7 +12,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
 import { RootStackParamList } from '../../navigation/types';
-import { ecouterPositionChauffeur, type PositionChauffeur } from '../../services/courseService';
+import { ecouterPositionChauffeur, ecouterStatutCourse, type PositionChauffeur } from '../../services/courseService';
 import CarteMapView, { GAGNOA_REGION } from '../../components/map/CarteMapView';
 
 type Props = {
@@ -21,8 +21,7 @@ type Props = {
 };
 
 export default function CourseScreen({ navigation, route }: Props) {
-  const { nom, chauffeur } = route.params;
-  const courseId: string | undefined = (route.params as any).courseId;
+  const { nom, chauffeur, courseId, montant = 1000 } = route.params;
 
   const [positionChauffeur, setPositionChauffeur] = useState<PositionChauffeur | null>(null);
   const [gpsActif, setGpsActif] = useState(false);
@@ -42,6 +41,21 @@ export default function CourseScreen({ navigation, route }: Props) {
     };
   }, [courseId]);
 
+  // PROD : écoute la fin de course → redirection automatique vers Paiement
+  useEffect(() => {
+    if (__DEV__ || !courseId) return;
+    const unsubscribe = ecouterStatutCourse(courseId, (course) => {
+      if (course.statut === 'terminee') {
+        navigation.replace('Paiement', {
+          nom,
+          montant: course.prix ?? montant,
+          courseId,
+        });
+      }
+    });
+    return unsubscribe;
+  }, [courseId, nom, montant]);
+
   async function handleAppeler() {
     const url = `tel:${chauffeur.telephone}`;
     const peutOuvrir = await Linking.canOpenURL(url);
@@ -53,7 +67,8 @@ export default function CourseScreen({ navigation, route }: Props) {
   }
 
   function handleCourseTerminee() {
-    navigation.replace('Home', { nom });
+    // DEV uniquement : simule la fin de course côté passager
+    navigation.replace('Paiement', { nom, montant, courseId });
   }
 
   const initiales = chauffeur.nom
@@ -145,13 +160,16 @@ export default function CourseScreen({ navigation, route }: Props) {
             <Text style={styles.boutonAppelerTexte}>Appeler le chauffeur</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.boutonTerminer}
-            onPress={handleCourseTerminee}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.boutonTerminerTexte}>Course terminée</Text>
-          </TouchableOpacity>
+          {/* En PROD, la redirection vers Paiement est automatique via Realtime */}
+          {__DEV__ && (
+            <TouchableOpacity
+              style={styles.boutonTerminer}
+              onPress={handleCourseTerminee}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.boutonTerminerTexte}>🔧 Simuler fin de course</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </SafeAreaView>

@@ -16,6 +16,9 @@ import HomeScreen from './src/screens/client/HomeScreen';
 import CommandeScreen from './src/screens/client/CommandeScreen';
 import RechercheScreen from './src/screens/client/RechercheScreen';
 import CourseScreen from './src/screens/client/CourseScreen';
+import PaiementScreen from './src/screens/client/PaiementScreen';
+import SuccesPaiementScreen from './src/screens/client/SuccesPaiementScreen';
+import NotationScreen from './src/screens/client/NotationScreen';
 
 // Écrans chauffeur
 import LoginChauffeurScreen from './src/screens/chauffeur/LoginChauffeurScreen';
@@ -48,6 +51,9 @@ export default function App() {
         <Stack.Screen name="Commande" component={CommandeScreen} />
         <Stack.Screen name="Recherche" component={RechercheScreen} />
         <Stack.Screen name="Course" component={CourseScreen} />
+        <Stack.Screen name="Paiement" component={PaiementScreen} />
+        <Stack.Screen name="SuccesPaiement" component={SuccesPaiementScreen} />
+        <Stack.Screen name="Notation" component={NotationScreen} />
 
         {/* Chauffeur */}
         <Stack.Screen name="LoginChauffeur" component={LoginChauffeurScreen} />
