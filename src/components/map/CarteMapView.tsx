@@ -62,9 +62,9 @@ export default function CarteMapView({
       rotateEnabled={false}
       pitchEnabled={false}
     >
-      {/* Tuiles OpenStreetMap — aucune clé API requise */}
+      {/* Tuiles Mapbox Streets */}
       <UrlTile
-        urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+        urlTemplate="https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidHJhdmlnby1hayIsImEiOiJjbHVtZzQ4OTMwMHZ2MmtvNG53NHNwenl3In0.demo"
         maximumZ={19}
         tileSize={256}
         shouldReplaceMapContent

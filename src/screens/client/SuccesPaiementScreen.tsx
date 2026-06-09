@@ -121,16 +121,14 @@ export default function SuccesPaiementScreen({ navigation, route }: Props) {
             { opacity: opacityAnim, transform: [{ translateY: slideAnim }] },
           ]}
         >
-          {courseId && (
-            <TouchableOpacity
-              style={styles.boutonNoter}
-              onPress={() => navigation.replace('Notation', { nom, courseId })}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.boutonNoterEmoji}>⭐</Text>
-              <Text style={styles.boutonNoterTexte}>Noter le chauffeur</Text>
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity
+            style={styles.boutonNoter}
+            onPress={() => navigation.replace('Notation', { nom, courseId })}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.boutonNoterEmoji}>⭐</Text>
+            <Text style={styles.boutonNoterTexte}>Noter le chauffeur</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.boutonAccueil}
