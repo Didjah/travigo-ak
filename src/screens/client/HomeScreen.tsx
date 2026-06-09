@@ -32,6 +32,10 @@ export default function HomeScreen({ navigation, route }: Props) {
     navigation.navigate('TransportScolaire', { nom });
   }
 
+  function handleLivraison() {
+    navigation.navigate('Livraison', { nom });
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       {/* En-tête */}
@@ -80,6 +84,14 @@ export default function HomeScreen({ navigation, route }: Props) {
           >
             <Text style={styles.boutonSecondaireIcone}>🏫</Text>
             <Text style={styles.boutonSecondaireTexte}>Scolaire</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.boutonSecondaire, { flex: 1 }]}
+            onPress={handleLivraison}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.boutonSecondaireIcone}>📦</Text>
+            <Text style={styles.boutonSecondaireTexte}>Livraison</Text>
           </TouchableOpacity>
         </View>
 

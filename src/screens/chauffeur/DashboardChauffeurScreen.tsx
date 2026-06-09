@@ -25,6 +25,10 @@ import {
   getAbonnementsScolaireChauffeur,
   type AbonnementScolaire,
 } from '../../services/scolaireService';
+import {
+  getLivraisonsDisponibles,
+  getLivraisonsLivreur,
+} from '../../services/livraisonService';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'DashboardChauffeur'>;
@@ -54,6 +58,8 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
   const [positionGPS, setPositionGPS] = useState<{ lat: number; lng: number } | null>(null);
   const [abonnement, setAbonnement] = useState<Abonnement | null>(null);
   const [courseScolaires, setCourseScolaires] = useState<AbonnementScolaire[]>([]);
+  const [nbLivraisonsDisponibles, setNbLivraisonsDisponibles] = useState(0);
+  const [nbLivraisonsEnCours, setNbLivraisonsEnCours] = useState(0);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stopWatchRef = useRef<(() => void) | null>(null);
@@ -63,9 +69,11 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
     async function chargerDonnees() {
       const user = getSessionUser();
       if (!user) return;
-      const [actif, scolaires] = await Promise.all([
+      const [actif, scolaires, livDispo, livMien] = await Promise.all([
         getAbonnementActif(user.id),
         getAbonnementsScolaireChauffeur(user.id),
+        getLivraisonsDisponibles(),
+        getLivraisonsLivreur(user.id),
       ]);
       if (actif) {
         setAbonnement(actif);
@@ -74,6 +82,8 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
         setAbonnement(dernier);
       }
       setCourseScolaires(scolaires);
+      setNbLivraisonsDisponibles(livDispo.length);
+      setNbLivraisonsEnCours(livMien.length);
     }
     chargerDonnees();
   }, []);
@@ -83,9 +93,11 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
     const unsub = navigation.addListener('focus', async () => {
       const user = getSessionUser();
       if (!user) return;
-      const [actif, scolaires] = await Promise.all([
+      const [actif, scolaires, livDispo, livMien] = await Promise.all([
         getAbonnementActif(user.id),
         getAbonnementsScolaireChauffeur(user.id),
+        getLivraisonsDisponibles(),
+        getLivraisonsLivreur(user.id),
       ]);
       if (actif) {
         setAbonnement(actif);
@@ -94,6 +106,8 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
         setAbonnement(dernier);
       }
       setCourseScolaires(scolaires);
+      setNbLivraisonsDisponibles(livDispo.length);
+      setNbLivraisonsEnCours(livMien.length);
     });
     return unsub;
   }, [navigation]);
@@ -370,6 +384,37 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
           </View>
           <View style={styles.scolaireChevron}>
             <Text style={styles.scolaireChevronTexte}>›</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+
+      {/* Section Livraisons disponibles */}
+      {(nbLivraisonsDisponibles > 0 || nbLivraisonsEnCours > 0 || __DEV__) && (
+        <TouchableOpacity
+          style={styles.livraisonCard}
+          onPress={() => navigation.navigate('LivraisonChauffeur')}
+          activeOpacity={0.85}
+        >
+          <View style={styles.livraisonLeft}>
+            <Text style={styles.livraisonIcone}>📦</Text>
+            <View>
+              <Text style={styles.livraisonTitre}>Livraisons disponibles</Text>
+              <Text style={styles.livraisonSous}>
+                {__DEV__ && nbLivraisonsDisponibles === 0
+                  ? '2 livraisons (simulation DEV)'
+                  : nbLivraisonsEnCours > 0
+                  ? `${nbLivraisonsEnCours} en cours · ${nbLivraisonsDisponibles} disponible${nbLivraisonsDisponibles > 1 ? 's' : ''}`
+                  : `${nbLivraisonsDisponibles} livraison${nbLivraisonsDisponibles > 1 ? 's' : ''} à prendre`}
+              </Text>
+            </View>
+          </View>
+          {nbLivraisonsEnCours > 0 && (
+            <View style={styles.livraisonBadgeEnCours}>
+              <Text style={styles.livraisonBadgeTexte}>{nbLivraisonsEnCours}</Text>
+            </View>
+          )}
+          <View style={styles.livraisonChevron}>
+            <Text style={styles.livraisonChevronTexte}>›</Text>
           </View>
         </TouchableOpacity>
       )}
@@ -802,6 +847,70 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scolaireChevronTexte: {
+    fontSize: 18,
+    color: COLORS.blanc,
+    fontWeight: '700',
+    lineHeight: 22,
+  },
+
+  // Section livraison
+  livraisonCard: {
+    marginHorizontal: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#F0F4FF',
+    borderRadius: 14,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    borderWidth: 1.5,
+    borderColor: '#C7D3F5',
+    shadowColor: '#1565C0',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  livraisonLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    flex: 1,
+  },
+  livraisonIcone: { fontSize: 28 },
+  livraisonTitre: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: COLORS.graphite,
+  },
+  livraisonSous: {
+    fontSize: 11,
+    color: COLORS.taupe,
+    marginTop: 2,
+  },
+  livraisonBadgeEnCours: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: COLORS.terracotta,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 4,
+  },
+  livraisonBadgeTexte: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: COLORS.blanc,
+  },
+  livraisonChevron: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#1565C0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  livraisonChevronTexte: {
     fontSize: 18,
     color: COLORS.blanc,
     fontWeight: '700',

@@ -16,6 +16,7 @@ export type RootStackParamList = {
   Home: { nom: string };
   Historique: { nom: string };
   TransportScolaire: { nom: string };
+  Livraison: { nom: string };
   Commande: { nom: string };
   Recherche: { nom: string; destination: string; courseId?: string };
   Course: { nom: string; chauffeur: ChauffeurInfo; courseId?: string; montant?: number };
@@ -28,6 +29,7 @@ export type RootStackParamList = {
   Abonnement: undefined;
   PaiementAbonnement: { type: 'taxi' | 'tricycle' | 'premium' };
   CourseScolaire: undefined;
+  LivraisonChauffeur: undefined;
   CourseEntrante: {
     passagerPrenom: string;
     depart: string;
