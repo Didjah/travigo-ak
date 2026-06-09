@@ -95,6 +95,14 @@ export default function OnboardingScreen({ navigation }: Props) {
               Vous êtes chauffeur ? Connectez-vous ici
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.lienMairie}
+            onPress={() => navigation.navigate('LoginMairie')}
+            activeOpacity={0.6}
+          >
+            <Text style={styles.lienMairieTexte}>🏛️ Accès Mairie</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -202,5 +210,15 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.taupe,
     textDecorationLine: 'underline',
+  },
+  lienMairie: {
+    alignItems: 'center',
+    paddingVertical: 6,
+    marginTop: 2,
+  },
+  lienMairieTexte: {
+    fontSize: 11,
+    color: COLORS.taupe,
+    opacity: 0.6,
   },
 });

@@ -7,7 +7,7 @@ export interface SessionUser {
   id: string;
   prenom: string;
   telephone: string;
-  role: 'passager' | 'chauffeur';
+  role: 'passager' | 'chauffeur' | 'admin_mairie';
 }
 
 let _user: SessionUser | null = null;

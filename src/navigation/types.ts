@@ -55,6 +55,10 @@ export type RootStackParamList = {
   Covoiturage: { nom: string };
   ProposerTrajet: undefined;
 
+  // Administration Mairie
+  LoginMairie: undefined;
+  DashboardMairie: undefined;
+
   // Paiement & post-course
   Paiement: { nom: string; montant: number; courseId?: string };
   SuccesPaiement: {

@@ -24,6 +24,10 @@ import PaiementScreen from './src/screens/client/PaiementScreen';
 import SuccesPaiementScreen from './src/screens/client/SuccesPaiementScreen';
 import NotationScreen from './src/screens/client/NotationScreen';
 
+// Écrans administration Mairie
+import LoginMairieScreen from './src/screens/admin/LoginMairieScreen';
+import DashboardMairieScreen from './src/screens/admin/DashboardMairieScreen';
+
 // Écrans chauffeur
 import LoginChauffeurScreen from './src/screens/chauffeur/LoginChauffeurScreen';
 import OTPChauffeurScreen from './src/screens/chauffeur/OTPChauffeurScreen';
@@ -68,6 +72,10 @@ export default function App() {
         <Stack.Screen name="Paiement" component={PaiementScreen} />
         <Stack.Screen name="SuccesPaiement" component={SuccesPaiementScreen} />
         <Stack.Screen name="Notation" component={NotationScreen} />
+
+        {/* Administration Mairie */}
+        <Stack.Screen name="LoginMairie" component={LoginMairieScreen} />
+        <Stack.Screen name="DashboardMairie" component={DashboardMairieScreen} />
 
         {/* Chauffeur */}
         <Stack.Screen name="LoginChauffeur" component={LoginChauffeurScreen} />
