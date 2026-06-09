@@ -248,6 +248,19 @@ export default function DashboardChauffeurScreen({ navigation }: Props) {
         </View>
       </View>
 
+      {/* Bouton Historique */}
+      <TouchableOpacity
+        style={styles.boutonHistorique}
+        onPress={() => navigation.navigate('HistoriqueChauffeur')}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.boutonHistoriqueIcone}>📋</Text>
+        <View>
+          <Text style={styles.boutonHistoriqueTexte}>Historique</Text>
+          <Text style={styles.boutonHistoriqueSous}>Voir toutes mes courses</Text>
+        </View>
+      </TouchableOpacity>
+
       {/* Message mode DEV */}
       {__DEV__ && disponible && (
         <View style={styles.devBanner}>
@@ -565,6 +578,38 @@ const styles = StyleSheet.create({
   },
   statLabelPrincipal: {
     color: 'rgba(255,255,255,0.8)',
+  },
+
+  // Bouton Historique
+  boutonHistorique: {
+    marginHorizontal: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: COLORS.blanc,
+    borderRadius: 14,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    borderWidth: 1.5,
+    borderColor: '#E5E0D8',
+    shadowColor: COLORS.graphite,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  boutonHistoriqueIcone: {
+    fontSize: 22,
+  },
+  boutonHistoriqueTexte: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: COLORS.graphite,
+  },
+  boutonHistoriqueSous: {
+    fontSize: 11,
+    color: COLORS.taupe,
+    marginTop: 1,
   },
 
   // Banner DEV

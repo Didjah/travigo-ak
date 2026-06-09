@@ -24,6 +24,10 @@ export default function HomeScreen({ navigation, route }: Props) {
     navigation.navigate('Commande', { nom });
   }
 
+  function handleHistorique() {
+    navigation.navigate('Historique', { nom });
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       {/* En-tête */}
@@ -54,6 +58,16 @@ export default function HomeScreen({ navigation, route }: Props) {
             <Text style={styles.inputDestinationTexte}>Entrez votre destination</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Bouton historique */}
+        <TouchableOpacity
+          style={styles.boutonHistorique}
+          onPress={handleHistorique}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.boutonHistoriqueIcone}>📋</Text>
+          <Text style={styles.boutonHistoriqueTexte}>Mes courses</Text>
+        </TouchableOpacity>
 
         {/* Bouton principal */}
         <TouchableOpacity
@@ -197,6 +211,30 @@ const styles = StyleSheet.create({
   inputDestinationTexte: {
     fontSize: 15,
     color: COLORS.taupe,
+  },
+  boutonHistorique: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: COLORS.blanc,
+    borderRadius: 14,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    borderWidth: 1.5,
+    borderColor: '#E5E0D8',
+    shadowColor: COLORS.graphite,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  boutonHistoriqueIcone: {
+    fontSize: 20,
+  },
+  boutonHistoriqueTexte: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: COLORS.graphite,
   },
   boutonCommander: {
     backgroundColor: COLORS.terracotta,

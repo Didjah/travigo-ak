@@ -13,6 +13,7 @@ import ProfileScreen from './src/screens/shared/ProfileScreen';
 
 // Écrans passager
 import HomeScreen from './src/screens/client/HomeScreen';
+import HistoriqueScreen from './src/screens/client/HistoriqueScreen';
 import CommandeScreen from './src/screens/client/CommandeScreen';
 import RechercheScreen from './src/screens/client/RechercheScreen';
 import CourseScreen from './src/screens/client/CourseScreen';
@@ -24,6 +25,7 @@ import NotationScreen from './src/screens/client/NotationScreen';
 import LoginChauffeurScreen from './src/screens/chauffeur/LoginChauffeurScreen';
 import OTPChauffeurScreen from './src/screens/chauffeur/OTPChauffeurScreen';
 import DashboardChauffeurScreen from './src/screens/chauffeur/DashboardChauffeurScreen';
+import HistoriqueChauffeurScreen from './src/screens/chauffeur/HistoriqueChauffeurScreen';
 import CourseEntranteScreen from './src/screens/chauffeur/CourseEntranteScreen';
 import NavigationChauffeurScreen from './src/screens/chauffeur/NavigationChauffeurScreen';
 import CourseEnCoursScreen from './src/screens/chauffeur/CourseEnCoursScreen';
@@ -48,6 +50,7 @@ export default function App() {
 
         {/* Passager */}
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Historique" component={HistoriqueScreen} />
         <Stack.Screen name="Commande" component={CommandeScreen} />
         <Stack.Screen name="Recherche" component={RechercheScreen} />
         <Stack.Screen name="Course" component={CourseScreen} />
@@ -59,6 +62,7 @@ export default function App() {
         <Stack.Screen name="LoginChauffeur" component={LoginChauffeurScreen} />
         <Stack.Screen name="OTPChauffeur" component={OTPChauffeurScreen} />
         <Stack.Screen name="DashboardChauffeur" component={DashboardChauffeurScreen} />
+        <Stack.Screen name="HistoriqueChauffeur" component={HistoriqueChauffeurScreen} />
         <Stack.Screen
           name="CourseEntrante"
           component={CourseEntranteScreen}

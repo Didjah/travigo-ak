@@ -14,6 +14,7 @@ export type RootStackParamList = {
 
   // Écrans passager
   Home: { nom: string };
+  Historique: { nom: string };
   Commande: { nom: string };
   Recherche: { nom: string; destination: string; courseId?: string };
   Course: { nom: string; chauffeur: ChauffeurInfo; courseId?: string; montant?: number };
@@ -22,6 +23,7 @@ export type RootStackParamList = {
   LoginChauffeur: undefined;
   OTPChauffeur: { phoneNumber: string };
   DashboardChauffeur: undefined;
+  HistoriqueChauffeur: undefined;
   CourseEntrante: {
     passagerPrenom: string;
     depart: string;
