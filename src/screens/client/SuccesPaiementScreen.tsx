@@ -10,6 +10,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
+import { SPACING, RADIUS, SHADOWS, TYPOGRAPHY, TOUCH } from '../../constants/tokens';
 import { RootStackParamList } from '../../navigation/types';
 
 type Props = {
@@ -18,25 +19,25 @@ type Props = {
 };
 
 const LABELS_MODE: Record<string, string> = {
-  especes: 'Espèces',
+  especes:      'Espèces',
   orange_money: 'Orange Money',
-  mtn_money: 'MTN Money',
-  wave: 'Wave',
+  mtn_money:    'MTN Money',
+  wave:         'Wave',
 };
 
 const COULEURS_MODE: Record<string, string> = {
-  especes: COLORS.graphite,
+  especes:      COLORS.graphite,
   orange_money: '#FF6600',
-  mtn_money: '#FFCC00',
-  wave: '#1D9BF0',
+  mtn_money:    '#FFCC00',
+  wave:         '#1D9BF0',
 };
 
 export default function SuccesPaiementScreen({ navigation, route }: Props) {
   const { nom, montant, modePaiement, courseId } = route.params;
 
-  const scaleAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim   = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(40)).current;
+  const slideAnim   = useRef(new Animated.Value(40)).current;
 
   useEffect(() => {
     Animated.sequence([
@@ -62,7 +63,7 @@ export default function SuccesPaiementScreen({ navigation, route }: Props) {
   }, []);
 
   const couleurMode = COULEURS_MODE[modePaiement] ?? COLORS.graphite;
-  const labelMode = LABELS_MODE[modePaiement] ?? modePaiement;
+  const labelMode   = LABELS_MODE[modePaiement] ?? modePaiement;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -144,23 +145,19 @@ export default function SuccesPaiementScreen({ navigation, route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.ivoire,
-  },
+  container: { flex: 1, backgroundColor: COLORS.ivoire },
   inner: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 28,
-    gap: 28,
+    paddingHorizontal: SPACING.xl - 4,
+    gap: SPACING.xl - 4,
   },
 
-  // Cercle succès
   cercleSucces: {
     width: 110,
     height: 110,
-    borderRadius: 55,
+    borderRadius: RADIUS.full,
     backgroundColor: '#F0FDF4',
     borderWidth: 3,
     borderColor: '#22C55E',
@@ -172,124 +169,69 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 10,
   },
-  iconSucces: {
-    fontSize: 52,
-  },
+  iconSucces: { fontSize: 52 },
 
-  // Textes
-  textes: {
-    alignItems: 'center',
-    gap: 6,
-  },
-  titre: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: COLORS.graphite,
-    textAlign: 'center',
-  },
-  sousTitre: {
-    fontSize: 15,
-    color: COLORS.taupe,
-    textAlign: 'center',
-  },
+  textes: { alignItems: 'center', gap: SPACING.xs + 2 },
+  titre: { fontSize: 26, fontWeight: '900', color: COLORS.graphite, textAlign: 'center' },
+  sousTitre: { ...TYPOGRAPHY.h3, color: COLORS.taupe, textAlign: 'center', fontWeight: '400' },
 
-  // Récapitulatif
   recapCard: {
     width: '100%',
     backgroundColor: COLORS.blanc,
-    borderRadius: 18,
-    padding: 20,
-    gap: 4,
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 8,
-    elevation: 3,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.lg,
+    gap: SPACING.xs,
+    ...SHADOWS.card,
   },
   recapRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: SPACING.sm + 2,
   },
-  recapLabel: {
-    fontSize: 13,
-    color: COLORS.taupe,
-    fontWeight: '500',
-  },
-  recapMontant: {
-    fontSize: 22,
-    fontWeight: '900',
-    color: COLORS.graphite,
-  },
-  recapMode: {
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  separateur: {
-    height: 1,
-    backgroundColor: '#F0EDE8',
-  },
+  recapLabel: { ...TYPOGRAPHY.body, color: COLORS.taupe, fontWeight: '500' },
+  recapMontant: { fontSize: 22, fontWeight: '900', color: COLORS.graphite },
+  recapMode: { ...TYPOGRAPHY.h3, fontWeight: '700' },
+  separateur: { height: 1, backgroundColor: '#F0EDE8' },
   statutBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: SPACING.xs + 1,
     backgroundColor: '#F0FDF4',
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    borderRadius: RADIUS.sm,
+    paddingHorizontal: SPACING.sm + 2,
+    paddingVertical: SPACING.xs,
   },
   statutPoint: {
     width: 6,
     height: 6,
-    borderRadius: 3,
+    borderRadius: RADIUS.full,
     backgroundColor: '#22C55E',
   },
-  statutTexte: {
-    fontSize: 13,
-    color: '#15803D',
-    fontWeight: '700',
-  },
+  statutTexte: { ...TYPOGRAPHY.caption, color: '#15803D', fontWeight: '700' },
 
-  // Actions
-  actions: {
-    width: '100%',
-    gap: 12,
-  },
+  actions: { width: '100%', gap: SPACING.md - 4 },
   boutonNoter: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
+    gap: SPACING.sm + 2,
     backgroundColor: '#FEF3C7',
-    borderRadius: 14,
-    paddingVertical: 16,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.md,
     borderWidth: 1.5,
     borderColor: '#FCD34D',
+    minHeight: TOUCH.minButton,
   },
-  boutonNoterEmoji: {
-    fontSize: 18,
-  },
-  boutonNoterTexte: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#92400E',
-  },
+  boutonNoterEmoji: { fontSize: 18 },
+  boutonNoterTexte: { ...TYPOGRAPHY.h3, color: '#92400E' },
   boutonAccueil: {
     backgroundColor: COLORS.graphite,
-    borderRadius: 14,
-    paddingVertical: 17,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.md + 1,
     alignItems: 'center',
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 5,
+    minHeight: TOUCH.minButton,
+    ...SHADOWS.card,
   },
-  boutonAccueilTexte: {
-    color: COLORS.ivoire,
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.3,
-  },
+  boutonAccueilTexte: { ...TYPOGRAPHY.h2, color: COLORS.ivoire, letterSpacing: 0.3 },
 });

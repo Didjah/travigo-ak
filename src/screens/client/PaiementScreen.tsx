@@ -13,6 +13,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
+import { SPACING, RADIUS, SHADOWS, TYPOGRAPHY, TOUCH } from '../../constants/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { initierPaiement, ModePaiement } from '../../services/paiementService';
 
@@ -172,7 +173,7 @@ export default function PaiementScreen({ navigation, route }: Props) {
           </View>
         </View>
 
-        {/* Champ téléphone — affiché uniquement pour les modes mobile money */}
+        {/* Champ téléphone mobile money */}
         {modeInfo.mobileMoney && (
           <View style={styles.section}>
             <Text style={styles.sectionTitre}>Numéro {modeInfo.label}</Text>
@@ -214,171 +215,103 @@ export default function PaiementScreen({ navigation, route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.ivoire,
-  },
+  container: { flex: 1, backgroundColor: COLORS.ivoire },
   inner: {
-    paddingHorizontal: 24,
-    paddingTop: 48,
-    paddingBottom: 40,
-    gap: 24,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.xxl,
+    paddingBottom: SPACING.xl + SPACING.sm,
+    gap: SPACING.lg,
   },
 
-  // En-tête
-  header: {
-    gap: 4,
-  },
-  titre: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: COLORS.graphite,
-    letterSpacing: 0.2,
-  },
-  sousTitre: {
-    fontSize: 14,
-    color: COLORS.taupe,
-  },
+  header: { gap: SPACING.xs },
+  titre: { ...TYPOGRAPHY.display, color: COLORS.graphite, fontSize: 28 },
+  sousTitre: { ...TYPOGRAPHY.body, color: COLORS.taupe },
 
-  // Montant
   montantCard: {
     backgroundColor: COLORS.graphite,
-    borderRadius: 20,
-    padding: 28,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.xl - 4,
     alignItems: 'center',
-    gap: 6,
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 8,
+    gap: SPACING.xs + 2,
+    ...SHADOWS.modal,
   },
   montantLabel: {
-    fontSize: 12,
+    ...TYPOGRAPHY.micro,
     color: '#9A9A9A',
-    fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
-  montantValeur: {
-    fontSize: 38,
-    fontWeight: '900',
-    color: COLORS.ivoire,
-    letterSpacing: 1,
-  },
-  devTexte: {
-    fontSize: 11,
-    color: '#FFD700',
-    marginTop: 4,
-    fontWeight: '500',
-  },
+  montantValeur: { ...TYPOGRAPHY.display, color: COLORS.ivoire, fontSize: 38, letterSpacing: 1 },
+  devTexte: { ...TYPOGRAPHY.micro, color: '#FFD700', marginTop: SPACING.xs, fontWeight: '500' },
 
-  // Section
-  section: {
-    gap: 12,
-  },
+  section: { gap: SPACING.md - 4 },
   sectionTitre: {
-    fontSize: 12,
-    fontWeight: '700',
+    ...TYPOGRAPHY.micro,
     color: COLORS.graphite,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
 
-  // Modes
-  modesList: {
-    gap: 10,
-  },
+  modesList: { gap: SPACING.sm + 2 },
   modeItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
+    gap: SPACING.md - 2,
     backgroundColor: COLORS.blanc,
-    borderRadius: 14,
-    padding: 16,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
     borderWidth: 1.5,
-    borderColor: '#E5E0D8',
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
+    borderColor: COLORS.borderLight,
+    minHeight: TOUCH.minSize + 4,
+    ...SHADOWS.card,
   },
-  modeEmoji: {
-    fontSize: 26,
-    width: 34,
-    textAlign: 'center',
-  },
-  modeTextes: {
-    flex: 1,
-    gap: 2,
-  },
-  modeLabel: {
-    fontSize: 15,
-    color: COLORS.graphite,
-    fontWeight: '500',
-  },
-  modeDesc: {
-    fontSize: 11,
-    color: COLORS.taupe,
-  },
+  modeEmoji: { fontSize: 26, width: 34, textAlign: 'center' },
+  modeTextes: { flex: 1, gap: 2 },
+  modeLabel: { ...TYPOGRAPHY.h3, color: COLORS.graphite, fontWeight: '500' },
+  modeDesc: { ...TYPOGRAPHY.micro, color: COLORS.taupe, fontWeight: '400' },
   modeCoche: {
     width: 22,
     height: 22,
-    borderRadius: 11,
+    borderRadius: RADIUS.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  modeCocheTexte: {
-    color: COLORS.blanc,
-    fontSize: 12,
-    fontWeight: '900',
-  },
+  modeCocheTexte: { color: COLORS.blanc, fontSize: 12, fontWeight: '900' },
 
-  // Champ téléphone
   champTel: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.blanc,
-    borderRadius: 12,
+    borderRadius: RADIUS.sm,
     borderWidth: 2,
-    paddingHorizontal: 14,
+    paddingHorizontal: SPACING.md - 2,
     paddingVertical: 2,
+    minHeight: TOUCH.minSize,
   },
   champTelPrefixe: {
-    fontSize: 15,
+    ...TYPOGRAPHY.h3,
     color: COLORS.graphite,
-    fontWeight: '700',
-    marginRight: 10,
-    paddingVertical: 12,
+    marginRight: SPACING.sm + 2,
+    paddingVertical: SPACING.md - 4,
   },
   champTelInput: {
     flex: 1,
     fontSize: 16,
     color: COLORS.graphite,
-    paddingVertical: 12,
+    paddingVertical: SPACING.md - 4,
     fontWeight: '500',
   },
 
-  // Bouton
   bouton: {
-    borderRadius: 14,
-    paddingVertical: 18,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.md + 2,
     alignItems: 'center',
+    minHeight: TOUCH.minButton,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.28,
     shadowRadius: 10,
     elevation: 5,
   },
-  boutonDesactive: {
-    opacity: 0.5,
-    elevation: 0,
-    shadowOpacity: 0,
-  },
-  boutonTexte: {
-    color: COLORS.blanc,
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.4,
-  },
+  boutonDesactive: { opacity: 0.5, elevation: 0, shadowOpacity: 0 },
+  boutonTexte: { ...TYPOGRAPHY.h2, color: COLORS.blanc, letterSpacing: 0.4 },
 });

@@ -12,6 +12,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
+import { SPACING, RADIUS, SHADOWS, TYPOGRAPHY, TOUCH } from '../../constants/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { supabase } from '../../services/supabase';
 
@@ -130,139 +131,84 @@ export default function NotationScreen({ navigation, route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.ivoire,
-  },
+  container: { flex: 1, backgroundColor: COLORS.ivoire },
   inner: {
     flex: 1,
-    paddingHorizontal: 28,
-    paddingTop: 40,
-    paddingBottom: 36,
-    gap: 28,
+    paddingHorizontal: SPACING.xl - 4,
+    paddingTop: SPACING.xl + SPACING.sm,
+    paddingBottom: SPACING.xl,
+    gap: SPACING.xl - 4,
     alignItems: 'center',
   },
 
-  // En-tête
-  header: {
-    alignItems: 'center',
-    gap: 10,
-  },
+  header: { alignItems: 'center', gap: SPACING.sm + 2 },
   iconContainer: {
     width: 72,
     height: 72,
-    borderRadius: 36,
+    borderRadius: RADIUS.full,
     backgroundColor: '#FEF3C7',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 4,
+    marginBottom: SPACING.xs,
   },
-  icon: {
-    fontSize: 36,
-  },
-  titre: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: COLORS.graphite,
-    textAlign: 'center',
-  },
+  icon: { fontSize: 36 },
+  titre: { fontSize: 24, fontWeight: '800', color: COLORS.graphite, textAlign: 'center' },
   sousTitre: {
-    fontSize: 13,
+    ...TYPOGRAPHY.caption,
     color: COLORS.taupe,
     textAlign: 'center',
     maxWidth: 260,
     lineHeight: 19,
+    fontWeight: '400',
   },
 
-  // Étoiles
-  etoilesSection: {
-    alignItems: 'center',
-    gap: 12,
-  },
-  etoilesContainer: {
-    flexDirection: 'row',
-    gap: 6,
-  },
-  etoileBouton: {
-    padding: 4,
-  },
-  etoile: {
-    fontSize: 46,
-    color: '#E5E0D8',
-  },
-  etoileActive: {
-    color: '#F59E0B',
-  },
+  etoilesSection: { alignItems: 'center', gap: SPACING.md - 4 },
+  etoilesContainer: { flexDirection: 'row', gap: SPACING.xs + 2 },
+  etoileBouton: { padding: SPACING.xs, minWidth: TOUCH.iconButton, alignItems: 'center' },
+  etoile: { fontSize: 46, color: COLORS.borderLight },
+  etoileActive: { color: '#F59E0B' },
   noteLabel: {
-    fontSize: 14,
+    ...TYPOGRAPHY.caption,
     color: COLORS.taupe,
     fontWeight: '600',
     minHeight: 20,
   },
 
-  // Commentaire
-  commentaireSection: {
-    width: '100%',
-    gap: 8,
-  },
+  commentaireSection: { width: '100%', gap: SPACING.sm },
   commentaireLabel: {
-    fontSize: 12,
-    fontWeight: '700',
+    ...TYPOGRAPHY.micro,
     color: COLORS.graphite,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
   commentaireInput: {
     backgroundColor: COLORS.blanc,
-    borderRadius: 12,
+    borderRadius: RADIUS.sm,
     borderWidth: 1.5,
-    borderColor: '#E5E0D8',
-    padding: 14,
-    fontSize: 14,
+    borderColor: COLORS.borderLight,
+    padding: SPACING.md - 2,
+    ...TYPOGRAPHY.body,
     color: COLORS.graphite,
     minHeight: 100,
   },
-  compteurChar: {
-    fontSize: 11,
-    color: COLORS.taupe,
-    alignSelf: 'flex-end',
-  },
+  compteurChar: { ...TYPOGRAPHY.micro, color: COLORS.taupe, alignSelf: 'flex-end', fontWeight: '400' },
 
-  // Boutons
-  actions: {
-    width: '100%',
-    gap: 10,
-    marginTop: 'auto',
-  },
+  actions: { width: '100%', gap: SPACING.sm + 2, marginTop: 'auto' },
   boutonEnvoyer: {
     backgroundColor: COLORS.terracotta,
-    borderRadius: 14,
-    paddingVertical: 17,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.md + 1,
     alignItems: 'center',
-    shadowColor: COLORS.terracotta,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.28,
-    shadowRadius: 10,
-    elevation: 5,
+    minHeight: TOUCH.minButton,
+    ...SHADOWS.cta,
   },
-  boutonDesactive: {
-    opacity: 0.4,
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-  boutonEnvoyerTexte: {
-    color: COLORS.blanc,
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.4,
-  },
+  boutonDesactive: { opacity: 0.4, shadowOpacity: 0, elevation: 0 },
+  boutonEnvoyerTexte: { ...TYPOGRAPHY.h2, color: COLORS.blanc, letterSpacing: 0.4 },
   boutonIgnorer: {
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: SPACING.md - 4,
+    minHeight: TOUCH.minSize,
+    justifyContent: 'center',
   },
-  boutonIgnorerTexte: {
-    fontSize: 14,
-    color: COLORS.taupe,
-    fontWeight: '600',
-  },
+  boutonIgnorerTexte: { ...TYPOGRAPHY.caption, color: COLORS.taupe, fontWeight: '600' },
 });

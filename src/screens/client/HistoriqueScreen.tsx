@@ -11,6 +11,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
+import { SPACING, RADIUS, SHADOWS, TYPOGRAPHY, TOUCH } from '../../constants/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { supabase } from '../../services/supabase';
 import { getSessionUser } from '../../services/session';
@@ -36,11 +37,11 @@ function formatDate(isoDate: string): string {
 
 function StatutBadge({ statut }: { statut: string }) {
   const config: Record<string, { label: string; bg: string; color: string }> = {
-    terminee: { label: 'Terminée', bg: '#E8F5E9', color: '#2E7D32' },
-    annulee: { label: 'Annulée', bg: '#FFEBEE', color: '#C62828' },
-    en_cours: { label: 'En cours', bg: '#FFF3E0', color: '#E65100' },
+    terminee:   { label: 'Terminée',   bg: '#E8F5E9', color: '#2E7D32' },
+    annulee:    { label: 'Annulée',    bg: '#FFEBEE', color: '#C62828' },
+    en_cours:   { label: 'En cours',   bg: '#FFF3E0', color: '#E65100' },
     en_attente: { label: 'En attente', bg: '#F3F4F6', color: '#6B7280' },
-    acceptee: { label: 'Acceptée', bg: '#E3F2FD', color: '#1565C0' },
+    acceptee:   { label: 'Acceptée',   bg: '#E3F2FD', color: '#1565C0' },
   };
   const c = config[statut] ?? { label: statut, bg: '#F3F4F6', color: '#6B7280' };
   return (
@@ -107,12 +108,8 @@ export default function HistoriqueScreen({ navigation, route }: Props) {
             <View style={styles.pointDest} />
           </View>
           <View style={styles.trajetTextes}>
-            <Text style={styles.trajetDepart} numberOfLines={1}>
-              {item.depart}
-            </Text>
-            <Text style={styles.trajetDestination} numberOfLines={1}>
-              {item.destination}
-            </Text>
+            <Text style={styles.trajetDepart} numberOfLines={1}>{item.depart}</Text>
+            <Text style={styles.trajetDestination} numberOfLines={1}>{item.destination}</Text>
           </View>
         </View>
         <View style={styles.cardFooter}>
@@ -135,7 +132,7 @@ export default function HistoriqueScreen({ navigation, route }: Props) {
           <Text style={styles.titre}>Mes courses</Text>
           <Text style={styles.sousTitre}>{nom}</Text>
         </View>
-        <View style={{ width: 40 }} />
+        <View style={{ width: TOUCH.iconButton }} />
       </View>
 
       {chargement ? (
@@ -163,130 +160,79 @@ export default function HistoriqueScreen({ navigation, route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.ivoire,
-  },
+  container: { flex: 1, backgroundColor: COLORS.ivoire },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.md,
   },
   retourBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: TOUCH.iconButton,
+    height: TOUCH.iconButton,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.blanc,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    ...SHADOWS.card,
   },
-  retourTexte: {
-    fontSize: 20,
-    color: COLORS.graphite,
-    fontWeight: '700',
-  },
-  headerCentre: {
-    alignItems: 'center',
-  },
-  titre: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: COLORS.graphite,
-  },
-  sousTitre: {
-    fontSize: 12,
-    color: COLORS.taupe,
-    fontWeight: '500',
-    marginTop: 1,
-  },
+  retourTexte: { fontSize: 20, color: COLORS.graphite, fontWeight: '700' },
+  headerCentre: { alignItems: 'center' },
+  titre: { ...TYPOGRAPHY.h2, color: COLORS.graphite },
+  sousTitre: { ...TYPOGRAPHY.caption, color: COLORS.taupe, marginTop: 1, fontWeight: '400' },
+
   centred: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: SPACING.md - 4,
   },
-  loaderTexte: {
-    fontSize: 13,
-    color: COLORS.taupe,
-    marginTop: 8,
-  },
-  videIcone: {
-    fontSize: 52,
-  },
-  videTitre: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: COLORS.graphite,
-    textAlign: 'center',
-  },
-  videSous: {
-    fontSize: 13,
-    color: COLORS.taupe,
-    textAlign: 'center',
-  },
+  loaderTexte: { ...TYPOGRAPHY.caption, color: COLORS.taupe, marginTop: SPACING.sm, fontWeight: '400' },
+  videIcone: { fontSize: 52 },
+  videTitre: { ...TYPOGRAPHY.h2, color: COLORS.graphite, textAlign: 'center' },
+  videSous: { ...TYPOGRAPHY.body, color: COLORS.taupe, textAlign: 'center' },
+
   liste: {
-    paddingHorizontal: 20,
-    paddingBottom: 32,
-    gap: 12,
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.xl,
+    gap: SPACING.md - 4,
   },
+
   card: {
     backgroundColor: COLORS.blanc,
-    borderRadius: 16,
-    padding: 18,
-    gap: 14,
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 8,
-    elevation: 2,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md + 2,
+    gap: SPACING.md - 2,
+    ...SHADOWS.card,
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  cardDate: {
-    fontSize: 12,
-    color: COLORS.taupe,
-    fontWeight: '600',
-  },
+  cardDate: { ...TYPOGRAPHY.caption, color: COLORS.taupe, fontWeight: '600' },
   badge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
+    paddingHorizontal: SPACING.sm + 2,
+    paddingVertical: SPACING.xs,
+    borderRadius: RADIUS.lg,
   },
-  badgeTexte: {
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  trajet: {
-    flexDirection: 'row',
-    gap: 12,
-    alignItems: 'stretch',
-  },
-  trajetColonne: {
-    alignItems: 'center',
-    paddingTop: 4,
-    gap: 2,
-  },
+  badgeTexte: { ...TYPOGRAPHY.micro, fontWeight: '700' },
+
+  trajet: { flexDirection: 'row', gap: SPACING.md - 4, alignItems: 'stretch' },
+  trajetColonne: { alignItems: 'center', paddingTop: SPACING.xs, gap: 2 },
   pointDepart: {
     width: 10,
     height: 10,
-    borderRadius: 5,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.terracotta,
   },
   trajetTiret: {
     width: 2,
     flex: 1,
-    backgroundColor: '#E5E0D8',
+    backgroundColor: COLORS.borderLight,
     minHeight: 14,
   },
   pointDest: {
@@ -295,44 +241,21 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     backgroundColor: COLORS.graphite,
   },
-  trajetTextes: {
-    flex: 1,
-    gap: 8,
-  },
-  trajetDepart: {
-    fontSize: 13,
-    color: COLORS.taupe,
-    fontWeight: '500',
-  },
-  trajetDestination: {
-    fontSize: 14,
-    color: COLORS.graphite,
-    fontWeight: '700',
-  },
+  trajetTextes: { flex: 1, gap: SPACING.sm },
+  trajetDepart: { ...TYPOGRAPHY.caption, color: COLORS.taupe, fontWeight: '500' },
+  trajetDestination: { ...TYPOGRAPHY.h3, color: COLORS.graphite },
+
   cardFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderTopWidth: 1,
     borderTopColor: '#F0EDE8',
-    paddingTop: 12,
+    paddingTop: SPACING.sm + SPACING.xs,
   },
-  montant: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: COLORS.terracotta,
-  },
-  etoilesRow: {
-    flexDirection: 'row',
-    gap: 2,
-  },
-  etoile: {
-    fontSize: 14,
-  },
-  etoileActive: {
-    color: '#F59E0B',
-  },
-  etoileVide: {
-    color: '#E5E0D8',
-  },
+  montant: { fontSize: 16, fontWeight: '800', color: COLORS.terracotta },
+  etoilesRow: { flexDirection: 'row', gap: 2 },
+  etoile: { fontSize: 14 },
+  etoileActive: { color: '#F59E0B' },
+  etoileVide: { color: COLORS.borderLight },
 });

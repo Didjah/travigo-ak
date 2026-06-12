@@ -12,6 +12,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
+import { SPACING, RADIUS, SHADOWS, TYPOGRAPHY, TOUCH } from '../../constants/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { getSessionUser } from '../../services/session';
 import {
@@ -28,10 +29,10 @@ type Props = {
 
 function StatutBadge({ statut }: { statut: AbonnementScolaire['statut'] }) {
   const config: Record<string, { label: string; bg: string; color: string }> = {
-    actif: { label: 'Actif', bg: '#E8F5E9', color: '#2E7D32' },
+    actif:      { label: 'Actif',      bg: '#E8F5E9', color: '#2E7D32' },
     en_attente: { label: 'En attente', bg: '#FFF3E0', color: '#E65100' },
-    expire: { label: 'Expiré', bg: '#FFEBEE', color: '#C62828' },
-    suspendu: { label: 'Suspendu', bg: '#F3F4F6', color: '#6B7280' },
+    expire:     { label: 'Expiré',     bg: '#FFEBEE', color: '#C62828' },
+    suspendu:   { label: 'Suspendu',   bg: '#F3F4F6', color: '#6B7280' },
   };
   const c = config[statut] ?? config.suspendu;
   return (
@@ -63,9 +64,7 @@ export default function TransportScolaireScreen({ navigation, route }: Props) {
     setChargement(false);
   }, []);
 
-  useEffect(() => {
-    charger();
-  }, [charger]);
+  useEffect(() => { charger(); }, [charger]);
 
   async function handleSouscrire() {
     const user = getSessionUser();
@@ -101,13 +100,12 @@ export default function TransportScolaireScreen({ navigation, route }: Props) {
         [{ text: 'OK', onPress: () => { setEnfantPrenom(''); setEcole(''); charger(); } }]
       );
     } else {
-      Alert.alert('Erreur', 'Impossible d\'enregistrer la demande. Réessayez.');
+      Alert.alert('Erreur', "Impossible d'enregistrer la demande. Réessayez.");
     }
   }
 
   return (
     <View style={styles.container}>
-      {/* En-tête */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.retourBtn}>
           <Text style={styles.retourTexte}>←</Text>
@@ -116,7 +114,7 @@ export default function TransportScolaireScreen({ navigation, route }: Props) {
           <Text style={styles.headerTitre}>Transport scolaire</Text>
           <Text style={styles.headerSous}>{nom}</Text>
         </View>
-        <View style={{ width: 40 }} />
+        <View style={{ width: TOUCH.iconButton }} />
       </View>
 
       <ScrollView
@@ -144,15 +142,15 @@ export default function TransportScolaireScreen({ navigation, route }: Props) {
             '⏰ Horaires personnalisés matin/soir',
             '📍 Prise en charge à domicile',
             '🔔 Notification à chaque trajet',
-            '📋 Suivi mensuel de l\'abonnement',
+            "📋 Suivi mensuel de l'abonnement",
           ].map((av, i) => (
             <Text key={i} style={styles.avantage}>{av}</Text>
           ))}
         </View>
 
-        {/* Liste des abonnements existants */}
+        {/* Abonnements existants */}
         {chargement ? (
-          <ActivityIndicator color={COLORS.terracotta} size="large" style={{ marginTop: 16 }} />
+          <ActivityIndicator color={COLORS.terracotta} size="large" style={{ marginTop: SPACING.md }} />
         ) : abonnements.length > 0 ? (
           <View style={styles.section}>
             <View style={styles.sectionHeaderRow}>
@@ -198,7 +196,7 @@ export default function TransportScolaireScreen({ navigation, route }: Props) {
           </View>
         ) : null}
 
-        {/* Formulaire d'inscription */}
+        {/* Formulaire */}
         {(formulaireVisible || abonnements.length === 0) && (
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>INSCRIRE UN ENFANT</Text>
@@ -284,294 +282,163 @@ export default function TransportScolaireScreen({ navigation, route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.ivoire,
-  },
+  container: { flex: 1, backgroundColor: COLORS.ivoire },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 52,
-    paddingBottom: 16,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.safe,
+    paddingBottom: SPACING.md,
     backgroundColor: COLORS.ivoire,
     borderBottomWidth: 1,
     borderBottomColor: '#F0EDE8',
   },
   retourBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: TOUCH.iconButton,
+    height: TOUCH.iconButton,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.blanc,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    ...SHADOWS.card,
   },
-  retourTexte: {
-    fontSize: 20,
-    color: COLORS.graphite,
-    fontWeight: '700',
-  },
-  headerCentre: {
-    alignItems: 'center',
-  },
-  headerTitre: {
-    fontSize: 17,
-    fontWeight: '800',
-    color: COLORS.graphite,
-  },
-  headerSous: {
-    fontSize: 11,
-    color: COLORS.taupe,
-    marginTop: 1,
-  },
+  retourTexte: { fontSize: 20, color: COLORS.graphite, fontWeight: '700' },
+  headerCentre: { alignItems: 'center' },
+  headerTitre: { ...TYPOGRAPHY.h2, color: COLORS.graphite },
+  headerSous: { ...TYPOGRAPHY.micro, color: COLORS.taupe, marginTop: 1 },
+
   inner: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 40,
-    gap: 20,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.xl + SPACING.sm,
+    gap: SPACING.lg,
   },
 
-  // Prix
+  // Prix card
   prixCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
+    gap: SPACING.md - 2,
     backgroundColor: COLORS.terracotta,
-    borderRadius: 18,
-    padding: 20,
-    shadowColor: COLORS.terracotta,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 6,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.lg,
+    ...SHADOWS.cta,
   },
-  prixIcone: {
-    fontSize: 34,
-  },
-  prixTextes: {
-    flex: 1,
-    gap: 3,
-  },
-  prixTitre: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: COLORS.blanc,
-  },
-  prixSous: {
-    fontSize: 11,
-    color: 'rgba(255,255,255,0.75)',
-  },
-  prixValeurWrapper: {
-    alignItems: 'flex-end',
-  },
-  prixValeur: {
-    fontSize: 20,
-    fontWeight: '900',
-    color: COLORS.blanc,
-  },
-  prixMonnaie: {
-    fontSize: 10,
-    color: 'rgba(255,255,255,0.75)',
-    fontWeight: '600',
-  },
+  prixIcone: { fontSize: 34 },
+  prixTextes: { flex: 1, gap: 3 },
+  prixTitre: { ...TYPOGRAPHY.h3, color: COLORS.blanc },
+  prixSous: { ...TYPOGRAPHY.micro, color: 'rgba(255,255,255,0.75)', fontWeight: '400' },
+  prixValeurWrapper: { alignItems: 'flex-end' },
+  prixValeur: { fontSize: 20, fontWeight: '900', color: COLORS.blanc },
+  prixMonnaie: { ...TYPOGRAPHY.micro, color: 'rgba(255,255,255,0.75)', fontWeight: '600' },
 
   // Avantages
   avantagesCard: {
     backgroundColor: COLORS.blanc,
-    borderRadius: 16,
-    padding: 18,
-    gap: 10,
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 1,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md + 2,
+    gap: SPACING.sm + 2,
+    ...SHADOWS.card,
   },
-  avantage: {
-    fontSize: 13,
-    color: COLORS.graphite,
-    fontWeight: '500',
-    lineHeight: 18,
-  },
+  avantage: { ...TYPOGRAPHY.body, color: COLORS.graphite, fontWeight: '500' },
 
   // Section
-  section: {
-    gap: 14,
-  },
+  section: { gap: SPACING.md - 2 },
   sectionHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: COLORS.taupe,
-    letterSpacing: 1.2,
-  },
-  ajouterLien: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: COLORS.terracotta,
-  },
+  sectionLabel: { ...TYPOGRAPHY.micro, color: COLORS.taupe, letterSpacing: 1.2 },
+  ajouterLien: { ...TYPOGRAPHY.caption, color: COLORS.terracotta, fontWeight: '700' },
 
-  // Abonnement card
+  // Abo card
   aboCard: {
     backgroundColor: COLORS.blanc,
-    borderRadius: 16,
-    padding: 16,
-    gap: 12,
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 8,
-    elevation: 2,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+    gap: SPACING.md - 4,
+    ...SHADOWS.card,
   },
-  aboCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
+  aboCardHeader: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md - 4 },
   aboAvatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: TOUCH.iconButton - 2,
+    height: TOUCH.iconButton - 2,
+    borderRadius: RADIUS.full,
     backgroundColor: '#FEF3C7',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  aboAvatarLettre: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: COLORS.terracotta,
-  },
-  aboTextes: {
-    flex: 1,
-    gap: 2,
-  },
-  aboNom: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: COLORS.graphite,
-  },
-  aboEcole: {
-    fontSize: 12,
-    color: COLORS.taupe,
-  },
+  aboAvatarLettre: { fontSize: 18, fontWeight: '800', color: COLORS.terracotta },
+  aboTextes: { flex: 1, gap: 2 },
+  aboNom: { ...TYPOGRAPHY.h3, color: COLORS.graphite },
+  aboEcole: { ...TYPOGRAPHY.caption, color: COLORS.taupe, fontWeight: '400' },
   badge: {
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    borderRadius: 20,
+    paddingHorizontal: SPACING.sm + 1,
+    paddingVertical: SPACING.xs,
+    borderRadius: RADIUS.lg,
   },
-  badgeTexte: {
-    fontSize: 11,
-    fontWeight: '700',
-  },
+  badgeTexte: { ...TYPOGRAPHY.micro, fontWeight: '700' },
   aboHoraires: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: SPACING.md - 4,
     borderTopWidth: 1,
     borderTopColor: '#F0EDE8',
-    paddingTop: 10,
+    paddingTop: SPACING.sm + 2,
     flexWrap: 'wrap',
   },
-  horaire: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  horaireIcone: {
-    fontSize: 13,
-  },
-  horaireTexte: {
-    fontSize: 12,
-    color: COLORS.graphite,
-    fontWeight: '600',
-  },
-  aboPrix: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: COLORS.terracotta,
-    marginLeft: 'auto',
-  },
-  enAttenteNote: {
-    fontSize: 11,
-    color: '#E65100',
-    fontStyle: 'italic',
-    fontWeight: '500',
-  },
+  horaire: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
+  horaireIcone: { fontSize: 13 },
+  horaireTexte: { ...TYPOGRAPHY.caption, color: COLORS.graphite, fontWeight: '600' },
+  aboPrix: { ...TYPOGRAPHY.caption, color: COLORS.terracotta, marginLeft: 'auto' },
+  enAttenteNote: { ...TYPOGRAPHY.micro, color: '#E65100', fontStyle: 'italic', fontWeight: '500' },
 
   // Formulaire
-  champsRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  champ: {
-    gap: 6,
-  },
+  champsRow: { flexDirection: 'row', gap: SPACING.md - 4 },
+  champ: { gap: SPACING.xs + 2 },
   champLabel: {
-    fontSize: 11,
-    fontWeight: '700',
+    ...TYPOGRAPHY.micro,
     color: COLORS.graphite,
     textTransform: 'uppercase',
     letterSpacing: 0.6,
   },
   champInput: {
     backgroundColor: COLORS.blanc,
-    borderRadius: 12,
+    borderRadius: RADIUS.sm,
     borderWidth: 1.5,
-    borderColor: '#E5E0D8',
-    paddingHorizontal: 14,
-    paddingVertical: 13,
-    fontSize: 14,
+    borderColor: COLORS.borderLight,
+    paddingHorizontal: SPACING.md - 2,
+    paddingVertical: SPACING.md - 3,
+    ...TYPOGRAPHY.body,
     color: COLORS.graphite,
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 1,
+    minHeight: TOUCH.minSize,
   },
+
   boutonSouscrire: {
     backgroundColor: COLORS.terracotta,
-    borderRadius: 14,
-    paddingVertical: 17,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.md + 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
-    shadowColor: COLORS.terracotta,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 5,
-    marginTop: 4,
+    gap: SPACING.sm + 2,
+    minHeight: TOUCH.minButton,
+    marginTop: SPACING.xs,
+    ...SHADOWS.cta,
   },
-  boutonDesactive: {
-    opacity: 0.5,
-    elevation: 0,
-    shadowOpacity: 0,
-  },
-  boutonIcone: {
-    fontSize: 18,
-  },
-  boutonTexte: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: COLORS.blanc,
-    letterSpacing: 0.3,
-  },
+  boutonDesactive: { opacity: 0.5, elevation: 0, shadowOpacity: 0 },
+  boutonIcone: { fontSize: 18 },
+  boutonTexte: { ...TYPOGRAPHY.h3, color: COLORS.blanc, letterSpacing: 0.3 },
+
   note: {
-    fontSize: 11,
+    ...TYPOGRAPHY.micro,
     color: COLORS.taupe,
     textAlign: 'center',
     lineHeight: 17,
-    paddingHorizontal: 8,
+    paddingHorizontal: SPACING.sm,
+    fontWeight: '400',
   },
 });

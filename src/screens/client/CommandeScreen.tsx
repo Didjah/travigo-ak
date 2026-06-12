@@ -12,6 +12,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { COLORS } from '../../constants/colors';
+import { SPACING, RADIUS, SHADOWS, TYPOGRAPHY, TOUCH } from '../../constants/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { creerCourse } from '../../services/courseService';
 import { getSessionUser } from '../../services/session';
@@ -51,9 +52,7 @@ export default function CommandeScreen({ navigation, route }: Props) {
         const geocode = await Location.reverseGeocodeAsync(loc.coords);
         if (geocode[0]) {
           const g = geocode[0];
-          const adresse = [g.street, g.district, g.city]
-            .filter(Boolean)
-            .join(', ');
+          const adresse = [g.street, g.district, g.city].filter(Boolean).join(', ');
           setDepart(adresse || 'Ma position — Gagnoa');
         } else {
           setDepart('Ma position — Gagnoa');
@@ -146,9 +145,7 @@ export default function CommandeScreen({ navigation, route }: Props) {
                 <Text style={styles.champChargementTexte}>Localisation...</Text>
               </View>
             ) : (
-              <Text style={styles.champValeur} numberOfLines={1}>
-                {depart}
-              </Text>
+              <Text style={styles.champValeur} numberOfLines={1}>{depart}</Text>
             )}
           </View>
         </View>
@@ -203,137 +200,57 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.ivoire,
   },
   inner: {
-    paddingBottom: 40,
-    gap: 20,
+    paddingBottom: SPACING.xxl,
+    gap: SPACING.lg,
   },
   header: {
-    paddingHorizontal: 24,
-    paddingTop: 56,
-    paddingBottom: 4,
-    gap: 4,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.safe + SPACING.xs,
+    paddingBottom: SPACING.xs,
+    gap: SPACING.xs,
   },
   retour: {
-    marginBottom: 8,
+    marginBottom: SPACING.sm,
+    minHeight: TOUCH.minSize,
+    justifyContent: 'center',
   },
   retourTexte: {
-    fontSize: 14,
+    ...TYPOGRAPHY.caption,
     color: COLORS.taupe,
-    fontWeight: '600',
   },
   titre: {
-    fontSize: 24,
-    fontWeight: '800',
+    ...TYPOGRAPHY.h1,
     color: COLORS.graphite,
-    letterSpacing: 0.2,
   },
   sousTitre: {
-    fontSize: 13,
+    ...TYPOGRAPHY.caption,
     color: COLORS.taupe,
+    fontWeight: '400',
   },
 
   // Carte
   carteWrapper: {
-    marginHorizontal: 24,
-    borderRadius: 16,
+    marginHorizontal: SPACING.lg,
+    borderRadius: RADIUS.md,
     overflow: 'hidden',
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  carte: {
-    height: 180,
-    backgroundColor: '#E8E3D6',
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  parc: {
-    position: 'absolute',
-    backgroundColor: '#C8D8A8',
-    borderRadius: 6,
-  },
-  routePrincipale: {
-    position: 'absolute',
-    backgroundColor: '#D5CFBC',
-  },
-  routeSecondaire: {
-    position: 'absolute',
-    backgroundColor: '#DDD9CE',
-  },
-  batiment: {
-    position: 'absolute',
-    backgroundColor: '#C9C3B4',
-    borderRadius: 3,
-  },
-  marqueurContainer: {
-    position: 'absolute',
-    top: '43%',
-    left: '39%',
-    alignItems: 'center',
-  },
-  marqueurOmbre: {
-    width: 14,
-    height: 6,
-    borderRadius: 7,
-    backgroundColor: 'rgba(0,0,0,0.15)',
-    marginTop: 2,
-  },
-  marqueurCorps: {
-    position: 'absolute',
-    top: -26,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: COLORS.terracotta,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: COLORS.terracotta,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  marqueurPoint: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.blanc,
-  },
-  badgeVille: {
-    position: 'absolute',
-    bottom: 10,
-    right: 10,
-    backgroundColor: 'rgba(61,61,61,0.75)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  badgeVilleTexte: {
-    fontSize: 11,
-    color: COLORS.blanc,
-    fontWeight: '600',
-    letterSpacing: 0.5,
+    ...SHADOWS.card,
   },
 
   // Formulaire
   formulaire: {
-    marginHorizontal: 24,
+    marginHorizontal: SPACING.lg,
     backgroundColor: COLORS.blanc,
-    borderRadius: 16,
-    paddingVertical: 8,
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.sm,
+    ...SHADOWS.card,
   },
   champTrajet: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    gap: 12,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md - 2,
+    gap: SPACING.sm + SPACING.xs,
+    minHeight: TOUCH.minSize,
   },
   champIconeContainer: {
     width: 24,
@@ -343,7 +260,7 @@ const styles = StyleSheet.create({
   pointDepart: {
     width: 12,
     height: 12,
-    borderRadius: 6,
+    borderRadius: RADIUS.full,
     borderWidth: 2.5,
     borderColor: COLORS.terracotta,
     backgroundColor: COLORS.blanc,
@@ -351,7 +268,7 @@ const styles = StyleSheet.create({
   ligneTiret: {
     width: 2,
     height: 16,
-    backgroundColor: '#E5E0D8',
+    backgroundColor: COLORS.borderLight,
     marginTop: 2,
   },
   pointDestination: {
@@ -365,67 +282,62 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   champLabel: {
-    fontSize: 11,
+    ...TYPOGRAPHY.micro,
     color: COLORS.taupe,
-    fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.6,
   },
   champValeur: {
-    fontSize: 15,
-    color: COLORS.graphite,
+    ...TYPOGRAPHY.h3,
     fontWeight: '500',
+    color: COLORS.graphite,
   },
   champChargement: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: SPACING.xs + 2,
   },
   champChargementTexte: {
-    fontSize: 14,
+    ...TYPOGRAPHY.body,
     color: COLORS.taupe,
     fontStyle: 'italic',
   },
   champInput: {
-    fontSize: 15,
-    color: COLORS.graphite,
+    ...TYPOGRAPHY.h3,
     fontWeight: '500',
+    color: COLORS.graphite,
     paddingVertical: 0,
     paddingHorizontal: 0,
   },
   separateur: {
     height: 1,
     backgroundColor: '#F0EDE8',
-    marginHorizontal: 16,
+    marginHorizontal: SPACING.md,
   },
 
   // Estimation
   estimation: {
-    marginHorizontal: 24,
+    marginHorizontal: SPACING.lg,
     backgroundColor: COLORS.blanc,
-    borderRadius: 14,
-    paddingHorizontal: 18,
-    paddingVertical: 14,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING.md + 2,
+    paddingVertical: SPACING.md,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 1,
+    ...SHADOWS.card,
   },
   estimationGauche: {
     gap: 2,
   },
   estimationLabel: {
-    fontSize: 13,
+    ...TYPOGRAPHY.h3,
     fontWeight: '600',
-    color: COLORS.graphite,
   },
   estimationNote: {
-    fontSize: 11,
+    ...TYPOGRAPHY.micro,
     color: COLORS.taupe,
+    fontWeight: '400',
   },
   estimationPrix: {
     fontSize: 16,
@@ -433,18 +345,15 @@ const styles = StyleSheet.create({
     color: COLORS.terracotta,
   },
 
-  // Bouton
+  // Bouton CTA
   bouton: {
-    marginHorizontal: 24,
+    marginHorizontal: SPACING.lg,
     backgroundColor: COLORS.terracotta,
-    paddingVertical: 17,
-    borderRadius: 14,
+    paddingVertical: SPACING.md + 2,
+    borderRadius: RADIUS.md,
     alignItems: 'center',
-    shadowColor: COLORS.terracotta,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.28,
-    shadowRadius: 10,
-    elevation: 5,
+    minHeight: TOUCH.minButton,
+    ...SHADOWS.cta,
   },
   boutonDesactive: {
     opacity: 0.45,
@@ -452,9 +361,8 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   boutonTexte: {
+    ...TYPOGRAPHY.h2,
     color: COLORS.blanc,
-    fontSize: 16,
-    fontWeight: '700',
     letterSpacing: 0.4,
   },
 });

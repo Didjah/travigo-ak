@@ -14,6 +14,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp, useFocusEffect } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
+import { SPACING, RADIUS, SHADOWS, TYPOGRAPHY, TOUCH } from '../../constants/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { getSessionUser } from '../../services/session';
 import {
@@ -258,7 +259,7 @@ export default function CovoiturageScreen({ navigation, route }: Props) {
 
       {/* Liste trajets */}
       {loading ? (
-        <ActivityIndicator size="large" color={COLORS.terracotta} style={{ marginTop: 40 }} />
+        <ActivityIndicator size="large" color={COLORS.terracotta} style={{ marginTop: SPACING.xxl }} />
       ) : (
         <ScrollView
           contentContainerStyle={styles.liste}
@@ -390,13 +391,9 @@ function CarteTrajet({
       </View>
 
       <View style={styles.carteMeta}>
-        <Text style={styles.carteMetaTexte}>
-          📅 {formatDateFr(trajet.date_depart)}
-        </Text>
+        <Text style={styles.carteMetaTexte}>📅 {formatDateFr(trajet.date_depart)}</Text>
         <Text style={styles.carteMetaTexte}>🕐 {trajet.heure_depart}</Text>
-        <Text style={styles.carteMetaTexte}>
-          💺 {trajet.places_totales} places total
-        </Text>
+        <Text style={styles.carteMetaTexte}>💺 {trajet.places_totales} places total</Text>
       </View>
 
       <View style={styles.carteBas}>
@@ -422,205 +419,218 @@ function CarteTrajet({
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.ivoire },
+
+  // Header
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
-    gap: 12,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.md,
+    gap: SPACING.sm + SPACING.xs,
   },
   retour: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: TOUCH.iconButton,
+    height: TOUCH.iconButton,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.blanc,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#E5E0D8',
+    borderColor: COLORS.borderLight,
   },
   retourTexte: { fontSize: 20, color: COLORS.graphite, lineHeight: 22 },
-  headerTitre: { fontSize: 20, fontWeight: '800', color: COLORS.graphite },
-  headerSous: { fontSize: 12, color: COLORS.taupe, marginTop: 1 },
+  headerTitre: { ...TYPOGRAPHY.h1, color: COLORS.graphite },
+  headerSous: { ...TYPOGRAPHY.caption, color: COLORS.taupe, marginTop: 1, fontWeight: '400' },
   badgeDev: { marginLeft: 'auto' },
   badgeDevTexte: {
-    fontSize: 10,
-    fontWeight: '700',
+    ...TYPOGRAPHY.micro,
     color: COLORS.terracotta,
     backgroundColor: COLORS.terracotta + '18',
-    paddingHorizontal: 8,
+    paddingHorizontal: SPACING.sm,
     paddingVertical: 3,
-    borderRadius: 6,
+    borderRadius: RADIUS.xs,
   },
+
+  // Filtres
   filtres: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
-    gap: 10,
-    marginBottom: 12,
+    paddingHorizontal: SPACING.lg,
+    gap: SPACING.sm + SPACING.xs,
+    marginBottom: SPACING.sm + SPACING.xs,
   },
   inputFiltre: {
     flex: 1,
     backgroundColor: COLORS.blanc,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 15,
+    borderRadius: RADIUS.sm,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
+    ...TYPOGRAPHY.h3,
     color: COLORS.graphite,
     borderWidth: 1.5,
-    borderColor: '#E5E0D8',
+    borderColor: COLORS.borderLight,
+    minHeight: TOUCH.minSize,
   },
   boutonRecherche: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
+    width: TOUCH.minSize,
+    height: TOUCH.minSize,
+    borderRadius: RADIUS.sm,
     backgroundColor: COLORS.terracotta,
     alignItems: 'center',
     justifyContent: 'center',
   },
   boutonRechercheTexte: { fontSize: 20 },
+
+  // Chips populaires
   populairesRow: {
-    paddingHorizontal: 20,
-    gap: 8,
-    paddingBottom: 12,
+    paddingHorizontal: SPACING.lg,
+    gap: SPACING.sm,
+    paddingBottom: SPACING.sm + SPACING.xs,
   },
   chipPopulaire: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 20,
+    paddingHorizontal: SPACING.md - 2,
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.lg,
     backgroundColor: COLORS.blanc,
     borderWidth: 1.5,
-    borderColor: '#E5E0D8',
+    borderColor: COLORS.borderLight,
+    minHeight: TOUCH.minSize - 8,
+    justifyContent: 'center',
   },
   chipPoplaireActif: {
     backgroundColor: COLORS.terracotta,
     borderColor: COLORS.terracotta,
   },
-  chipPopulaireTexte: { fontSize: 13, fontWeight: '600', color: COLORS.graphite },
+  chipPopulaireTexte: { ...TYPOGRAPHY.caption, color: COLORS.graphite },
   chipPopulaireTexteActif: { color: COLORS.blanc },
-  liste: { paddingHorizontal: 20, paddingBottom: 30, gap: 14 },
-  vide: { alignItems: 'center', marginTop: 60, gap: 8 },
+
+  // Liste
+  liste: { paddingHorizontal: SPACING.lg, paddingBottom: SPACING.xl, gap: SPACING.md - 2 },
+  vide: { alignItems: 'center', marginTop: SPACING.xxl + SPACING.sm, gap: SPACING.sm },
   videIcone: { fontSize: 48 },
-  videTexte: { fontSize: 18, fontWeight: '700', color: COLORS.graphite },
-  videSous: { fontSize: 14, color: COLORS.taupe, textAlign: 'center' },
+  videTexte: { ...TYPOGRAPHY.h2, color: COLORS.graphite },
+  videSous: { ...TYPOGRAPHY.body, color: COLORS.taupe, textAlign: 'center' },
+
+  // Carte trajet
   carte: {
     backgroundColor: COLORS.blanc,
-    borderRadius: 16,
-    padding: 18,
-    gap: 14,
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 8,
-    elevation: 3,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md + 2,
+    gap: SPACING.md - 2,
+    ...SHADOWS.card,
   },
   carteHaut: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  carteItineraire: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  carteVille: { fontSize: 17, fontWeight: '800', color: COLORS.graphite },
+  carteItineraire: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
+  carteVille: { ...TYPOGRAPHY.h2, color: COLORS.graphite },
   carteArrow: { fontSize: 16, color: COLORS.terracotta, fontWeight: '700' },
   carteBadgePlaces: {
     backgroundColor: '#E8F5E9',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
+    paddingHorizontal: SPACING.sm + SPACING.xs,
+    paddingVertical: SPACING.xs,
+    borderRadius: RADIUS.lg,
   },
   carteBadgePlacesComplet: { backgroundColor: '#FFEBEE' },
-  carteBadgePlacesTexte: { fontSize: 12, fontWeight: '700', color: '#388E3C' },
+  carteBadgePlacesTexte: { ...TYPOGRAPHY.caption, color: '#388E3C' },
   carteBadgePlacesTexteComplet: { color: COLORS.rouge },
-  carteMeta: { flexDirection: 'row', gap: 14, flexWrap: 'wrap' },
-  carteMetaTexte: { fontSize: 13, color: COLORS.taupe },
+  carteMeta: { flexDirection: 'row', gap: SPACING.md - 2, flexWrap: 'wrap' },
+  carteMetaTexte: { ...TYPOGRAPHY.caption, color: COLORS.taupe, fontWeight: '400' },
   carteBas: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   cartePrix: { fontSize: 20, fontWeight: '800', color: COLORS.terracotta },
-  cartePrixSous: { fontSize: 11, color: COLORS.taupe },
+  cartePrixSous: { ...TYPOGRAPHY.micro, color: COLORS.taupe },
   btnReserver: {
     backgroundColor: COLORS.terracotta,
-    borderRadius: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    borderRadius: RADIUS.sm,
+    paddingHorizontal: SPACING.lg - SPACING.xs,
+    paddingVertical: SPACING.sm + SPACING.xs,
+    minHeight: TOUCH.minSize - SPACING.sm,
+    justifyContent: 'center',
   },
   btnReserverDisabled: { backgroundColor: COLORS.taupe },
-  btnReserverTexte: { fontSize: 14, fontWeight: '700', color: COLORS.blanc },
+  btnReserverTexte: { ...TYPOGRAPHY.caption, color: COLORS.blanc, fontWeight: '700' },
+
   // Modal
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: COLORS.overlayDark,
     justifyContent: 'flex-end',
   },
   modalContenu: {
     backgroundColor: COLORS.blanc,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 28,
-    gap: 14,
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
+    padding: SPACING.xl - SPACING.xs,
+    gap: SPACING.md - 2,
   },
-  modalTitre: { fontSize: 20, fontWeight: '800', color: COLORS.graphite },
-  modalTrajet: { fontSize: 18, fontWeight: '700', color: COLORS.terracotta },
-  modalSous: { fontSize: 14, color: COLORS.taupe },
+  modalTitre: { ...TYPOGRAPHY.h1, color: COLORS.graphite },
+  modalTrajet: { ...TYPOGRAPHY.h2, color: COLORS.terracotta },
+  modalSous: { ...TYPOGRAPHY.body, color: COLORS.taupe },
   placesSelector: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: COLORS.ivoire,
-    borderRadius: 12,
-    padding: 14,
+    borderRadius: RADIUS.sm,
+    padding: SPACING.md - 2,
   },
-  placesSelectorLabel: { fontSize: 15, fontWeight: '600', color: COLORS.graphite },
-  placesControle: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  placesSelectorLabel: { ...TYPOGRAPHY.h3, color: COLORS.graphite },
+  placesControle: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md },
   placesBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: TOUCH.iconButton - SPACING.xs,
+    height: TOUCH.iconButton - SPACING.xs,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.blanc,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: '#E5E0D8',
+    borderColor: COLORS.borderLight,
   },
   placesBtnTexte: { fontSize: 20, color: COLORS.graphite, lineHeight: 22 },
   placesValeur: { fontSize: 22, fontWeight: '800', color: COLORS.graphite, minWidth: 28, textAlign: 'center' },
   recapMontant: {
     backgroundColor: COLORS.ivoire,
-    borderRadius: 12,
-    padding: 14,
-    gap: 8,
+    borderRadius: RADIUS.sm,
+    padding: SPACING.md - 2,
+    gap: SPACING.sm,
   },
   recapLigne: { flexDirection: 'row', justifyContent: 'space-between' },
-  recapLabel: { fontSize: 13, color: COLORS.taupe },
-  recapValeur: { fontSize: 13, fontWeight: '600', color: COLORS.graphite },
+  recapLabel: { ...TYPOGRAPHY.caption, color: COLORS.taupe, fontWeight: '400' },
+  recapValeur: { ...TYPOGRAPHY.caption, fontWeight: '600', color: COLORS.graphite },
   recapTotal: {
     borderTopWidth: 1,
-    borderTopColor: '#E5E0D8',
-    paddingTop: 8,
-    marginTop: 4,
+    borderTopColor: COLORS.borderLight,
+    paddingTop: SPACING.sm,
+    marginTop: SPACING.xs,
   },
-  recapTotalLabel: { fontSize: 15, fontWeight: '700', color: COLORS.graphite },
+  recapTotalLabel: { ...TYPOGRAPHY.h3, color: COLORS.graphite },
   recapTotalValeur: { fontSize: 17, fontWeight: '800', color: COLORS.terracotta },
-  modalBoutons: { flexDirection: 'row', gap: 12, marginTop: 4 },
+  modalBoutons: { flexDirection: 'row', gap: SPACING.sm + SPACING.xs, marginTop: SPACING.xs },
   btnAnnuler: {
     flex: 1,
-    paddingVertical: 15,
-    borderRadius: 14,
+    paddingVertical: SPACING.md - 1,
+    borderRadius: RADIUS.md,
     backgroundColor: COLORS.ivoire,
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: '#E5E0D8',
+    borderColor: COLORS.borderLight,
+    minHeight: TOUCH.minButton,
   },
-  btnAnnulerTexte: { fontSize: 15, fontWeight: '700', color: COLORS.graphite },
+  btnAnnulerTexte: { ...TYPOGRAPHY.h3, color: COLORS.graphite },
   btnConfirmer: {
     flex: 2,
-    paddingVertical: 15,
-    borderRadius: 14,
+    paddingVertical: SPACING.md - 1,
+    borderRadius: RADIUS.md,
     backgroundColor: COLORS.terracotta,
     alignItems: 'center',
+    minHeight: TOUCH.minButton,
   },
   btnConfirmerDisabled: { opacity: 0.6 },
-  btnConfirmerTexte: { fontSize: 15, fontWeight: '700', color: COLORS.blanc },
+  btnConfirmerTexte: { ...TYPOGRAPHY.h3, color: COLORS.blanc },
 });

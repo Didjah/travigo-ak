@@ -12,6 +12,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
+import { SPACING, RADIUS, SHADOWS, TYPOGRAPHY, TOUCH } from '../../constants/tokens';
 import { RootStackParamList } from '../../navigation/types';
 import { getSessionUser } from '../../services/session';
 import {
@@ -110,7 +111,6 @@ export default function LivraisonScreen({ navigation, route }: Props) {
 
   return (
     <View style={styles.container}>
-      {/* En-tête */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.retourBtn}>
           <Text style={styles.retourTexte}>←</Text>
@@ -119,7 +119,7 @@ export default function LivraisonScreen({ navigation, route }: Props) {
           <Text style={styles.headerTitre}>Livraison</Text>
           <Text style={styles.headerSous}>{nom}</Text>
         </View>
-        <View style={{ width: 40 }} />
+        <View style={{ width: TOUCH.iconButton }} />
       </View>
 
       <ScrollView
@@ -262,7 +262,6 @@ export default function LivraisonScreen({ navigation, route }: Props) {
               />
             </View>
 
-            {/* Estimation prix */}
             <View style={styles.estimationCard}>
               <Text style={styles.estimationLabel}>Estimation</Text>
               <Text style={styles.estimationPrix}>
@@ -301,85 +300,60 @@ export default function LivraisonScreen({ navigation, route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.ivoire,
-  },
+  container: { flex: 1, backgroundColor: COLORS.ivoire },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 52,
-    paddingBottom: 16,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.safe,
+    paddingBottom: SPACING.md,
     backgroundColor: COLORS.ivoire,
     borderBottomWidth: 1,
     borderBottomColor: '#F0EDE8',
   },
   retourBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: TOUCH.iconButton,
+    height: TOUCH.iconButton,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.blanc,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    ...SHADOWS.card,
   },
-  retourTexte: {
-    fontSize: 20,
-    color: COLORS.graphite,
-    fontWeight: '700',
-  },
+  retourTexte: { fontSize: 20, color: COLORS.graphite, fontWeight: '700' },
   headerCentre: { alignItems: 'center' },
-  headerTitre: { fontSize: 17, fontWeight: '800', color: COLORS.graphite },
-  headerSous: { fontSize: 11, color: COLORS.taupe, marginTop: 1 },
+  headerTitre: { ...TYPOGRAPHY.h2, color: COLORS.graphite },
+  headerSous: { ...TYPOGRAPHY.micro, color: COLORS.taupe, marginTop: 1 },
+
   inner: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 40,
-    gap: 22,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.xl + SPACING.sm,
+    gap: SPACING.lg - 2,
   },
 
-  // Types
-  section: { gap: 14 },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: COLORS.taupe,
-    letterSpacing: 1.2,
-  },
+  section: { gap: SPACING.md - 2 },
+  sectionLabel: { ...TYPOGRAPHY.micro, color: COLORS.taupe, letterSpacing: 1.2 },
   sectionHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  ajouterLien: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: COLORS.terracotta,
-  },
-  typesRow: {
-    flexDirection: 'row',
-    gap: 10,
-  },
+  ajouterLien: { ...TYPOGRAPHY.caption, color: COLORS.terracotta, fontWeight: '700' },
+
+  typesRow: { flexDirection: 'row', gap: SPACING.sm + 2 },
   typeCard: {
     flex: 1,
     backgroundColor: COLORS.blanc,
-    borderRadius: 14,
-    padding: 14,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md - 2,
     alignItems: 'center',
-    gap: 6,
+    gap: SPACING.xs + 2,
     borderWidth: 1.5,
-    borderColor: '#E5E0D8',
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 1,
+    borderColor: COLORS.borderLight,
+    ...SHADOWS.card,
   },
   typeCardActif: {
     borderColor: COLORS.terracotta,
@@ -390,190 +364,108 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   typeEmoji: { fontSize: 26 },
-  typeLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: COLORS.graphite,
-    textAlign: 'center',
-  },
+  typeLabel: { ...TYPOGRAPHY.caption, color: COLORS.graphite, textAlign: 'center' },
   typeLabelActif: { color: COLORS.terracotta },
-  typePrix: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: COLORS.taupe,
-  },
+  typePrix: { ...TYPOGRAPHY.micro, color: COLORS.taupe, fontWeight: '600' },
   typePrixActif: { color: COLORS.terracotta },
-  typeDesc: {
-    fontSize: 12,
-    color: COLORS.taupe,
-    textAlign: 'center',
-    lineHeight: 17,
-  },
+  typeDesc: { ...TYPOGRAPHY.caption, color: COLORS.taupe, textAlign: 'center', lineHeight: 17, fontWeight: '400' },
 
-  // Livraisons existantes
   livraisonCard: {
     backgroundColor: COLORS.blanc,
-    borderRadius: 16,
-    padding: 16,
-    gap: 12,
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 8,
-    elevation: 2,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+    gap: SPACING.md - 4,
+    ...SHADOWS.card,
   },
-  livraisonCardTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
+  livraisonCardTop: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md - 4 },
   livraisonIconeWrapper: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: TOUCH.iconButton - 4,
+    height: TOUCH.iconButton - 4,
+    borderRadius: RADIUS.full,
     backgroundColor: '#FFF4F0',
     alignItems: 'center',
     justifyContent: 'center',
   },
   livraisonIcone: { fontSize: 20 },
   livraisonTextes: { flex: 1, gap: 2 },
-  livraisonDesc: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: COLORS.graphite,
-  },
-  livraisonType: { fontSize: 11, color: COLORS.taupe },
+  livraisonDesc: { ...TYPOGRAPHY.h3, color: COLORS.graphite },
+  livraisonType: { ...TYPOGRAPHY.micro, color: COLORS.taupe, fontWeight: '600' },
   statutBadge: {
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    borderRadius: 20,
+    paddingHorizontal: SPACING.sm + 1,
+    paddingVertical: SPACING.xs,
+    borderRadius: RADIUS.lg,
   },
-  statutTexte: { fontSize: 11, fontWeight: '700' },
+  statutTexte: { ...TYPOGRAPHY.micro, fontWeight: '700' },
   livraisonAdresses: {
-    gap: 4,
+    gap: SPACING.xs,
     borderTopWidth: 1,
     borderTopColor: '#F0EDE8',
-    paddingTop: 10,
+    paddingTop: SPACING.sm + 2,
   },
-  adresseRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
+  adresseRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
   adressePoint: {
     width: 8,
     height: 8,
-    borderRadius: 4,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.terracotta,
   },
-  adressePointDest: {
-    borderRadius: 2,
-    backgroundColor: COLORS.graphite,
-  },
-  adresseTiret: {
-    width: 1,
-    height: 10,
-    backgroundColor: '#E5E0D8',
-    marginLeft: 3.5,
-  },
-  adresseTexte: {
-    fontSize: 12,
-    color: COLORS.graphite,
-    fontWeight: '500',
-    flex: 1,
-  },
-  livraisonPrix: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: COLORS.terracotta,
-    textAlign: 'right',
-  },
+  adressePointDest: { borderRadius: 2, backgroundColor: COLORS.graphite },
+  adresseTiret: { width: 1, height: 10, backgroundColor: COLORS.borderLight, marginLeft: 3.5 },
+  adresseTexte: { ...TYPOGRAPHY.caption, color: COLORS.graphite, fontWeight: '500', flex: 1 },
+  livraisonPrix: { ...TYPOGRAPHY.h3, color: COLORS.terracotta, textAlign: 'right' },
 
-  // Formulaire
-  champ: { gap: 6 },
-  champLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: COLORS.graphite,
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-  },
+  champ: { gap: SPACING.xs + 2 },
+  champLabel: { ...TYPOGRAPHY.micro, color: COLORS.graphite, textTransform: 'uppercase', letterSpacing: 0.6 },
   champInput: {
     backgroundColor: COLORS.blanc,
-    borderRadius: 12,
+    borderRadius: RADIUS.sm,
     borderWidth: 1.5,
-    borderColor: '#E5E0D8',
-    paddingHorizontal: 14,
-    paddingVertical: 13,
-    fontSize: 14,
+    borderColor: COLORS.borderLight,
+    paddingHorizontal: SPACING.md - 2,
+    paddingVertical: SPACING.md - 3,
+    ...TYPOGRAPHY.body,
     color: COLORS.graphite,
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 1,
-    minHeight: 48,
+    minHeight: TOUCH.minSize,
   },
 
-  // Estimation
   estimationCard: {
     backgroundColor: COLORS.graphite,
-    borderRadius: 14,
-    padding: 18,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md + 2,
     alignItems: 'center',
-    gap: 4,
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    gap: SPACING.xs,
+    ...SHADOWS.card,
   },
   estimationLabel: {
-    fontSize: 11,
+    ...TYPOGRAPHY.micro,
     color: '#9A9A9A',
-    fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
-  estimationPrix: {
-    fontSize: 32,
-    fontWeight: '900',
-    color: COLORS.ivoire,
-    letterSpacing: 1,
-  },
-  estimationSous: {
-    fontSize: 11,
-    color: '#9A9A9A',
-    textAlign: 'center',
-  },
+  estimationPrix: { ...TYPOGRAPHY.display, color: COLORS.ivoire, letterSpacing: 1 },
+  estimationSous: { ...TYPOGRAPHY.micro, color: '#9A9A9A', textAlign: 'center', fontWeight: '400' },
 
   boutonCommander: {
     backgroundColor: COLORS.terracotta,
-    borderRadius: 14,
-    paddingVertical: 17,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.md + 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
-    shadowColor: COLORS.terracotta,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 5,
+    gap: SPACING.sm + 2,
+    minHeight: TOUCH.minButton,
+    ...SHADOWS.cta,
   },
   boutonDesactive: { opacity: 0.5, elevation: 0, shadowOpacity: 0 },
   boutonIcone: { fontSize: 18 },
-  boutonTexte: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: COLORS.blanc,
-    letterSpacing: 0.3,
-  },
+  boutonTexte: { ...TYPOGRAPHY.h3, color: COLORS.blanc, letterSpacing: 0.3 },
+
   note: {
-    fontSize: 11,
+    ...TYPOGRAPHY.micro,
     color: COLORS.taupe,
     textAlign: 'center',
     lineHeight: 17,
-    paddingHorizontal: 8,
+    paddingHorizontal: SPACING.sm,
+    fontWeight: '400',
   },
 });

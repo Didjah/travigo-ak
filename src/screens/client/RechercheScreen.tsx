@@ -10,6 +10,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
+import { SPACING, RADIUS, SHADOWS, TYPOGRAPHY, TOUCH } from '../../constants/tokens';
 import { ChauffeurInfo, RootStackParamList } from '../../navigation/types';
 import { ecouterStatutCourse, getPrenomUtilisateur } from '../../services/courseService';
 
@@ -35,22 +36,13 @@ export default function RechercheScreen({ navigation, route }: Props) {
   const pulse2 = useRef(new Animated.Value(0)).current;
   const pulse3 = useRef(new Animated.Value(0)).current;
 
-  // Animation cercles pulsants
   useEffect(() => {
     function creerPulse(anim: Animated.Value, delay: number) {
       return Animated.loop(
         Animated.sequence([
           Animated.delay(delay),
-          Animated.timing(anim, {
-            toValue: 1,
-            duration: 1500,
-            useNativeDriver: true,
-          }),
-          Animated.timing(anim, {
-            toValue: 0,
-            duration: 0,
-            useNativeDriver: true,
-          }),
+          Animated.timing(anim, { toValue: 1, duration: 1500, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: 0, duration: 0, useNativeDriver: true }),
         ])
       );
     }
@@ -63,36 +55,24 @@ export default function RechercheScreen({ navigation, route }: Props) {
     a2.start();
     a3.start();
 
-    return () => {
-      a1.stop();
-      a2.stop();
-      a3.stop();
-    };
+    return () => { a1.stop(); a2.stop(); a3.stop(); };
   }, [pulse1, pulse2, pulse3]);
 
-  // Compteur d'attente
   useEffect(() => {
     const id = setInterval(() => setSecondes((s) => s + 1), 1000);
     return () => clearInterval(id);
   }, []);
 
-  // DEV : chauffeur simulé après 5s
   useEffect(() => {
     if (!__DEV__) return;
     const timeout = setTimeout(() => {
-      navigation.replace('Course', {
-        nom,
-        chauffeur: CHAUFFEUR_SIMULE,
-        courseId,
-      });
+      navigation.replace('Course', { nom, chauffeur: CHAUFFEUR_SIMULE, courseId });
     }, DEV_DELAI);
     return () => clearTimeout(timeout);
   }, [navigation, nom, courseId]);
 
-  // PROD : écoute Realtime du statut de la course
   useEffect(() => {
     if (__DEV__ || !courseId) return;
-
     const unsubscribe = ecouterStatutCourse(courseId, async (course) => {
       if (course.statut === 'acceptee' && course.chauffeur_id) {
         const prenomChauffeur = await getPrenomUtilisateur(course.chauffeur_id);
@@ -110,7 +90,6 @@ export default function RechercheScreen({ navigation, route }: Props) {
         });
       }
     });
-
     return unsubscribe;
   }, [courseId, navigation, nom]);
 
@@ -159,9 +138,7 @@ export default function RechercheScreen({ navigation, route }: Props) {
           <Text style={styles.destination} numberOfLines={1}>
             Vers : {destination}
           </Text>
-          <Text style={styles.compteur}>
-            Attente : {secondes}s
-          </Text>
+          <Text style={styles.compteur}>Attente : {secondes}s</Text>
           {__DEV__ && (
             <View style={styles.devBanner}>
               <Text style={styles.devBannerTexte}>
@@ -171,10 +148,8 @@ export default function RechercheScreen({ navigation, route }: Props) {
           )}
         </View>
 
-        {/* Points d'animation texte */}
         <PointsAnimation />
 
-        {/* Bouton annuler */}
         <TouchableOpacity
           style={styles.boutonAnnuler}
           onPress={handleAnnuler}
@@ -195,21 +170,21 @@ function PointsAnimation() {
     }, 500);
     return () => clearInterval(id);
   }, []);
-  return <Text style={{ color: COLORS.taupe, fontSize: 24, letterSpacing: 4 }}>{dots}</Text>;
+  return (
+    <Text style={styles.dots}>{dots}</Text>
+  );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.ivoire,
-  },
+  container: { flex: 1, backgroundColor: COLORS.ivoire },
   inner: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 32,
-    gap: 32,
+    paddingHorizontal: SPACING.xl,
+    gap: SPACING.xl,
   },
+
   animationContainer: {
     width: 80,
     height: 80,
@@ -219,15 +194,11 @@ const styles = StyleSheet.create({
   cercleCore: {
     width: 64,
     height: 64,
-    borderRadius: 32,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.terracotta,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: COLORS.terracotta,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    elevation: 6,
+    ...SHADOWS.cta,
   },
   cercleCoreTexte: {
     color: COLORS.blanc,
@@ -235,55 +206,36 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: 1,
   },
-  textes: {
-    alignItems: 'center',
-    gap: 8,
-  },
-  titre: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: COLORS.graphite,
-    textAlign: 'center',
-    letterSpacing: 0.2,
-  },
-  destination: {
-    fontSize: 14,
-    color: COLORS.taupe,
-    textAlign: 'center',
-    maxWidth: 260,
-  },
-  compteur: {
-    fontSize: 13,
-    color: COLORS.taupe,
-    fontWeight: '600',
-    marginTop: 4,
-  },
+
+  textes: { alignItems: 'center', gap: SPACING.sm },
+  titre: { ...TYPOGRAPHY.h1, color: COLORS.graphite, textAlign: 'center' },
+  destination: { ...TYPOGRAPHY.body, color: COLORS.taupe, textAlign: 'center', maxWidth: 260 },
+  compteur: { ...TYPOGRAPHY.caption, color: COLORS.taupe, fontWeight: '600', marginTop: SPACING.xs },
   devBanner: {
-    marginTop: 8,
+    marginTop: SPACING.sm,
     backgroundColor: '#FFF3CD',
     borderWidth: 1,
     borderColor: '#FBBF24',
-    borderRadius: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    borderRadius: RADIUS.xs,
+    paddingVertical: SPACING.xs + 2,
+    paddingHorizontal: SPACING.md - 4,
   },
   devBannerTexte: {
-    fontSize: 12,
+    ...TYPOGRAPHY.micro,
     color: '#92400E',
     fontWeight: '600',
     textAlign: 'center',
   },
+  dots: { color: COLORS.taupe, fontSize: 24, letterSpacing: 4 },
+
   boutonAnnuler: {
     borderWidth: 1.5,
     borderColor: COLORS.taupe,
-    borderRadius: 14,
-    paddingVertical: 14,
-    paddingHorizontal: 32,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.md - 2,
+    paddingHorizontal: SPACING.xl,
+    minHeight: TOUCH.minSize,
+    justifyContent: 'center',
   },
-  boutonAnnulerTexte: {
-    fontSize: 15,
-    color: COLORS.graphite,
-    fontWeight: '600',
-    letterSpacing: 0.2,
-  },
+  boutonAnnulerTexte: { ...TYPOGRAPHY.h3, color: COLORS.graphite, letterSpacing: 0.2 },
 });
