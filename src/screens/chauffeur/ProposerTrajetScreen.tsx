@@ -63,7 +63,8 @@ export default function ProposerTrajetScreen({ navigation }: Props) {
   }
 
   async function publier() {
-    if (!valider() || !user) return;
+    if (!valider()) return;
+    if (!__DEV__ && !user) return;
     setPublication(true);
 
     if (__DEV__) {

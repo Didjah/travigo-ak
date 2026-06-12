@@ -63,12 +63,13 @@ const DEV_ABONNEMENTS: AbonnementScolaire[] = [
   },
 ];
 
-function HeureSection({ label, icone, enfants, confirmes, onConfirmer }: {
+function HeureSection({ label, icone, enfants, confirmes, onConfirmer, periode }: {
   label: string;
   icone: string;
   enfants: AbonnementScolaire[];
   confirmes: Set<string>;
-  onConfirmer: (id: string, enfantPrenom: string) => void;
+  onConfirmer: (key: string, enfantPrenom: string) => void;
+  periode: 'matin' | 'soir';
 }) {
   if (enfants.length === 0) return null;
   return (
@@ -81,7 +82,8 @@ function HeureSection({ label, icone, enfants, confirmes, onConfirmer }: {
         </View>
       </View>
       {enfants.map((enfant) => {
-        const confirme = confirmes.has(enfant.id);
+        const confirmeKey = `${enfant.id}-${periode}`;
+        const confirme = confirmes.has(confirmeKey);
         return (
           <View
             key={enfant.id}
@@ -108,7 +110,7 @@ function HeureSection({ label, icone, enfants, confirmes, onConfirmer }: {
             ) : (
               <TouchableOpacity
                 style={styles.boutonConfirmer}
-                onPress={() => onConfirmer(enfant.id, enfant.enfant_prenom)}
+                onPress={() => onConfirmer(confirmeKey, enfant.enfant_prenom)}
                 activeOpacity={0.85}
               >
                 <Text style={styles.boutonConfirmerTexte}>Confirmer</Text>
@@ -196,6 +198,7 @@ export default function CourseScolaireScreen({ navigation }: Props) {
 
   const totalConfirmes = confirmes.size;
   const totalEnfants = abonnements.length;
+  const totalTournees = abonnements.length * 2;
 
   return (
     <View style={styles.container}>
@@ -217,7 +220,7 @@ export default function CourseScolaireScreen({ navigation }: Props) {
           </View>
           <View style={[styles.resumeCard, styles.resumeCardPrincipal]}>
             <Text style={[styles.resumeValeur, { color: COLORS.blanc }]}>
-              {totalConfirmes}/{totalEnfants}
+              {totalConfirmes}/{totalTournees}
             </Text>
             <Text style={[styles.resumeLabel, { color: 'rgba(255,255,255,0.75)' }]}>
               Confirmés
@@ -270,6 +273,7 @@ export default function CourseScolaireScreen({ navigation }: Props) {
                 enfants={enfantsMatin}
                 confirmes={confirmes}
                 onConfirmer={handleConfirmer}
+                periode="matin"
               />
 
               {/* Planning soir */}
@@ -279,6 +283,7 @@ export default function CourseScolaireScreen({ navigation }: Props) {
                 enfants={enfantsSoir}
                 confirmes={confirmes}
                 onConfirmer={handleConfirmer}
+                periode="soir"
               />
 
               {/* Demandes non assignées */}
