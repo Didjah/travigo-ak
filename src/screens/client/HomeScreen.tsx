@@ -10,6 +10,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { COLORS } from '../../constants/colors';
+import { SPACING, RADIUS, SHADOWS, TYPOGRAPHY, TOUCH } from '../../constants/tokens';
 import { RootStackParamList } from '../../navigation/types';
 
 type Props = {
@@ -172,29 +173,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.ivoire,
   },
+
+  // ── Header ──────────────────────────────────────────────────────────────
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 16,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.md,
   },
   headerSalut: {
-    fontSize: 14,
+    ...TYPOGRAPHY.caption,
     color: COLORS.taupe,
-    fontWeight: '500',
   },
   headerNom: {
-    fontSize: 24,
-    fontWeight: '800',
+    ...TYPOGRAPHY.h1,
     color: COLORS.graphite,
-    letterSpacing: 0.3,
   },
   logoMini: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: TOUCH.iconButton,
+    height: TOUCH.iconButton,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.graphite,
     alignItems: 'center',
     justifyContent: 'center',
@@ -210,148 +210,140 @@ const styles = StyleSheet.create({
   logoMiniGo: {
     color: COLORS.terracotta,
   },
+
+  // ── Corps ────────────────────────────────────────────────────────────────
   corps: {
     flex: 1,
-    paddingHorizontal: 24,
-    gap: 20,
-    paddingTop: 8,
+    paddingHorizontal: SPACING.lg,
+    gap: SPACING.lg,
+    paddingTop: SPACING.sm,
   },
+
+  // ── Carte destination ────────────────────────────────────────────────────
   carteDestination: {
     backgroundColor: COLORS.blanc,
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 8,
-    elevation: 3,
-    gap: 12,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+    ...SHADOWS.card,
+    gap: SPACING.sm + SPACING.xs, // 12
   },
   carteDestinationLabel: {
-    fontSize: 13,
+    ...TYPOGRAPHY.sectionLabel,
     color: COLORS.taupe,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
   },
   inputDestination: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: '#E5E0D8',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 13,
-    gap: 10,
+    borderColor: COLORS.borderLight,
+    borderRadius: RADIUS.sm,
+    paddingHorizontal: SPACING.md - 2, // 14
+    paddingVertical: SPACING.md,       // 16 — touch target ≥48dp
+    gap: SPACING.sm + SPACING.xs,      // 12
+    minHeight: TOUCH.minSize,
   },
   inputDestinationPoint: {
     width: 10,
     height: 10,
-    borderRadius: 5,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.terracotta,
   },
   inputDestinationTexte: {
-    fontSize: 15,
+    ...TYPOGRAPHY.h3,
+    fontWeight: '400',
     color: COLORS.taupe,
   },
+
+  // ── Grille boutons secondaires ──────────────────────────────────────────
   boutonsGrille: {
-    gap: 10,
+    gap: SPACING.sm + SPACING.xs, // 12
   },
   boutonsRow: {
     flexDirection: 'row',
-    gap: 10,
+    gap: SPACING.sm + SPACING.xs, // 12
   },
   boutonSecondaire: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: SPACING.sm,
     backgroundColor: COLORS.blanc,
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING.md - 2, // 14
+    paddingVertical: SPACING.md,       // 16 — touch target ≥48dp
     borderWidth: 1.5,
-    borderColor: '#E5E0D8',
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 1,
+    borderColor: COLORS.borderLight,
+    minHeight: TOUCH.minSize,
+    ...SHADOWS.card,
   },
   boutonSecondaireIcone: {
     fontSize: 18,
   },
   boutonSecondaireTexte: {
-    fontSize: 14,
-    fontWeight: '700',
+    ...TYPOGRAPHY.h3,
     color: COLORS.graphite,
   },
+
+  // ── Bouton principal CTA ─────────────────────────────────────────────────
   boutonCommander: {
     backgroundColor: COLORS.terracotta,
-    borderRadius: 16,
-    paddingHorizontal: 24,
-    paddingVertical: 20,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md + SPACING.xs, // 20
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-    shadowColor: COLORS.terracotta,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 6,
+    gap: SPACING.md,
+    minHeight: TOUCH.minButton,
+    ...SHADOWS.cta,
   },
   boutonCommanderIcone: {
     fontSize: 13,
     fontWeight: '900',
     color: 'rgba(255,255,255,0.7)',
     letterSpacing: 1,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    width: TOUCH.iconButton,
+    height: TOUCH.iconButton,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.overlayLight,
     textAlign: 'center',
-    lineHeight: 44,
+    lineHeight: TOUCH.iconButton,
   },
   boutonCommanderTexte: {
-    fontSize: 18,
-    fontWeight: '800',
+    ...TYPOGRAPHY.h2,
     color: COLORS.blanc,
-    letterSpacing: 0.2,
   },
   boutonCommanderSous: {
-    fontSize: 12,
+    ...TYPOGRAPHY.caption,
     color: 'rgba(255,255,255,0.75)',
     marginTop: 2,
   },
+
+  // ── Services ─────────────────────────────────────────────────────────────
   services: {
-    gap: 12,
+    gap: SPACING.sm + SPACING.xs, // 12
   },
   servicesTitre: {
-    fontSize: 16,
-    fontWeight: '700',
+    ...TYPOGRAPHY.h2,
     color: COLORS.graphite,
   },
   servicesGrille: {
     flexDirection: 'row',
-    gap: 12,
+    gap: SPACING.sm + SPACING.xs, // 12
   },
   serviceCard: {
     flex: 1,
     backgroundColor: COLORS.blanc,
-    borderRadius: 14,
-    padding: 16,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
     alignItems: 'center',
-    gap: 8,
-    shadowColor: COLORS.graphite,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    gap: SPACING.sm,
+    minHeight: TOUCH.minSize + SPACING.md, // zone tactile confortable
+    ...SHADOWS.card,
   },
   serviceCardIconeContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: TOUCH.iconButton,
+    height: TOUCH.iconButton,
+    borderRadius: RADIUS.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -360,25 +352,26 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   serviceCardLabel: {
-    fontSize: 12,
-    fontWeight: '600',
+    ...TYPOGRAPHY.caption,
     color: COLORS.graphite,
   },
+
+  // ── Footer ───────────────────────────────────────────────────────────────
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    gap: 6,
+    paddingVertical: SPACING.md,
+    gap: SPACING.xs + 2, // 6
   },
   footerPoint: {
     width: 6,
     height: 6,
-    borderRadius: 3,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.terracotta,
   },
   footerTexte: {
-    fontSize: 12,
+    ...TYPOGRAPHY.caption,
     color: COLORS.taupe,
     fontWeight: '500',
   },
