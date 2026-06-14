@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
@@ -51,9 +52,10 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer>
-      <StatusBar style="dark" backgroundColor="#FAF8F4" />
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
+        <StatusBar style="dark" backgroundColor="#FAF8F4" />
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
         {/* Partagés */}
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
@@ -94,7 +96,8 @@ export default function App() {
         />
         <Stack.Screen name="NavigationChauffeur" component={NavigationChauffeurScreen} />
         <Stack.Screen name="CourseEnCours" component={CourseEnCoursScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }

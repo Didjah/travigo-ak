@@ -37,7 +37,9 @@ export async function initialiserNotifications(): Promise<string | null> {
   if (statut !== 'granted') return null;
 
   try {
-    const { data } = await Notifications.getExpoPushTokenAsync();
+    const { data } = await Notifications.getExpoPushTokenAsync({
+      projectId: 'b401180f-96a4-4e30-9442-7ac81a0f9dd4',
+    });
     return data;
   } catch {
     return null;
