@@ -18,7 +18,11 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "TRAVIGO-AK utilise votre position pour afficher votre emplacement sur la carte et vous mettre en relation avec un chauffeur.",
         "NSLocationAlwaysUsageDescription": "TRAVIGO-AK utilise votre position en arrière-plan pour envoyer votre GPS au passager pendant la course.",
-        "UIBackgroundModes": ["location", "fetch", "remote-notification"]
+        "UIBackgroundModes": [
+          "location",
+          "fetch",
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -27,11 +31,6 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundColor": "#FAF8F4"
-      },
-      "config": {
-        "googleMaps": {
-          "apiKey": ""
-        }
       },
       "permissions": [
         "ACCESS_FINE_LOCATION",
@@ -61,6 +60,11 @@
           "locationAlwaysAndWhenInUsePermission": "TRAVIGO-AK utilise votre position pour la navigation et le suivi GPS de la course."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b401180f-96a4-4e30-9442-7ac81a0f9dd4"
+      }
+    }
   }
 }

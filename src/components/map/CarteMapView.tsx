@@ -1,7 +1,22 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, Component, ReactNode } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import MapView, { Marker, UrlTile } from 'react-native-maps';
 import { COLORS } from '../../constants/colors';
+
+class MapErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() {
+    if (this.state.failed) {
+      return (
+        <View style={[styles.map, styles.errorContainer]}>
+          <Text style={styles.errorText}>Carte indisponible</Text>
+        </View>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // Centre de Gagnoa, Côte d'Ivoire
 export const GAGNOA_REGION = {
@@ -52,6 +67,7 @@ export default function CarteMapView({
   }, [centrerSur?.latitude, centrerSur?.longitude]);
 
   return (
+    <MapErrorBoundary>
     <MapView
       ref={mapRef}
       style={[styles.map, hauteur ? { height: hauteur } : undefined, style]}
@@ -87,12 +103,22 @@ export default function CarteMapView({
         </Marker>
       ))}
     </MapView>
+    </MapErrorBoundary>
   );
 }
 
 const styles = StyleSheet.create({
   map: {
     flex: 1,
+  },
+  errorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F0EDE8',
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#888',
   },
   marqueurEmoji: {
     width: 36,

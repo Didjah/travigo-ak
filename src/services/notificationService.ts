@@ -2,28 +2,37 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { supabase } from './supabase';
 
-// Afficher les notifications quand l'app est au premier plan
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
-
 /**
  * Demande la permission push et retourne le token Expo.
  * Retourne null si refusé ou en cas d'erreur.
  */
 export async function initialiserNotifications(): Promise<string | null> {
-  // Les simulateurs/émulateurs ne supportent pas les push notifications
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'TRAVIGO-AK',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#C0522A',
+  try {
+    // Doit être appelé à l'intérieur d'une fonction, pas au niveau module,
+    // pour éviter un crash si Firebase n'est pas encore initialisé au démarrage.
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+      }),
     });
+  } catch {
+    // Si expo-notifications ne peut pas s'initialiser (pas de Firebase, etc.)
+    return null;
+  }
+
+  if (Platform.OS === 'android') {
+    try {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'TRAVIGO-AK',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#C0522A',
+      });
+    } catch {
+      return null;
+    }
   }
 
   const { status: existant } = await Notifications.getPermissionsAsync();
